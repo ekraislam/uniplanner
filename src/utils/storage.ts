@@ -19,13 +19,13 @@ export const STORAGE_KEYS = {
 };
 
 export const DEFAULT_SETTINGS: StudentSettings = {
-  universityName: '',
+  universityName: 'Green University of Bangladesh',
   studentName: '',
   degreeProgram: '',
-  gradingScale: '4.0',
+  gradingScale: '4.0_ugc',
   currentTerm: 'Fall 2026',
-  targetGpa: 3.8,
-  gpaConfig: getDefaultGpaConfig('4.0'),
+  targetGpa: 3.75,
+  gpaConfig: getDefaultGpaConfig('4.0_ugc'),
 };
 
 export const VALID_ASSESSMENT_TYPES: AssessmentType[] = [

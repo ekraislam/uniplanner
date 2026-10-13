@@ -469,7 +469,7 @@ export const SettingsView: React.FC = () => {
                   value={gradingScale}
                   onChange={(e) => handleScalePresetChange(e.target.value as any)}
                 >
-                  <option value="4.0_ugc">4.0 Scale (UGC Bangladesh Unified — 80% A+ 4.00, 75% A 3.75, 70% A- 3.50)</option>
+                  <option value="4.0_ugc">4.0 Scale (UGC Bangladesh / Green University — 80% A+ 4.00, 75% A 3.75, 70% A- 3.50)</option>
                   <option value="4.0">4.0 Scale (US / Global Standard — A=4.0, B=3.0, C=2.0)</option>
                   <option value="4.33">4.33 Scale (A+=4.33, A=4.0, A-=3.7)</option>
                   <option value="5.0">5.0 Scale (Singapore / Nordic / Honors systems)</option>

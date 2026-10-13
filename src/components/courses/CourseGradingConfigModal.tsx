@@ -45,10 +45,15 @@ const ConfigForm: React.FC<ConfigFormProps> = ({ course, onClose }) => {
       return [...existingConfig.gradeBoundaries];
     }
     return [
-      { grade: 'A', minMarks: 80 },
-      { grade: 'B', minMarks: 70 },
-      { grade: 'C', minMarks: 60 },
-      { grade: 'D', minMarks: 50 },
+      { grade: 'A+', minMarks: 80 },
+      { grade: 'A', minMarks: 75 },
+      { grade: 'A-', minMarks: 70 },
+      { grade: 'B+', minMarks: 65 },
+      { grade: 'B', minMarks: 60 },
+      { grade: 'B-', minMarks: 55 },
+      { grade: 'C+', minMarks: 50 },
+      { grade: 'C', minMarks: 45 },
+      { grade: 'D', minMarks: 40 },
       { grade: 'F', minMarks: 0 },
     ];
   });
@@ -97,13 +102,15 @@ const ConfigForm: React.FC<ConfigFormProps> = ({ course, onClose }) => {
   const handleLoadStandardScale = () => {
     const total = parsedTotal > 0 ? parsedTotal : 100;
     setGradeBoundaries([
-      { grade: 'A+', minMarks: Math.round(total * 0.9) },
-      { grade: 'A', minMarks: Math.round(total * 0.8) },
-      { grade: 'B+', minMarks: Math.round(total * 0.75) },
-      { grade: 'B', minMarks: Math.round(total * 0.7) },
-      { grade: 'C+', minMarks: Math.round(total * 0.65) },
-      { grade: 'C', minMarks: Math.round(total * 0.6) },
-      { grade: 'D', minMarks: Math.round(total * 0.5) },
+      { grade: 'A+', minMarks: Math.round(total * 0.8) },
+      { grade: 'A', minMarks: Math.round(total * 0.75) },
+      { grade: 'A-', minMarks: Math.round(total * 0.7) },
+      { grade: 'B+', minMarks: Math.round(total * 0.65) },
+      { grade: 'B', minMarks: Math.round(total * 0.6) },
+      { grade: 'B-', minMarks: Math.round(total * 0.55) },
+      { grade: 'C+', minMarks: Math.round(total * 0.5) },
+      { grade: 'C', minMarks: Math.round(total * 0.45) },
+      { grade: 'D', minMarks: Math.round(total * 0.4) },
       { grade: 'F', minMarks: 0 },
     ]);
   };
@@ -393,8 +400,9 @@ const ConfigForm: React.FC<ConfigFormProps> = ({ course, onClose }) => {
                 className="btn-secondary"
                 style={{ fontSize: '12px', padding: '5px 10px' }}
                 onClick={handleLoadStandardScale}
+                title="Load Bangladesh UGC and Green University of Bangladesh Standard Scale (80% A+, 75% A, 70% A-)"
               >
-                Auto-Scale
+                UGC / GUB Scale
               </button>
               <button
                 type="button"
