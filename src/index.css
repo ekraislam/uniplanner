@@ -1199,8 +1199,37 @@ a {
 }
 
 /* ==========================================================================
+   View Header & Section Title Groups
+   ========================================================================== */
+
+.view-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 24px;
+  flex-wrap: wrap;
+}
+
+.view-title-group h2 {
+  font-size: 24px;
+  font-weight: 800;
+  color: var(--text-main);
+  letter-spacing: -0.4px;
+  line-height: 1.25;
+  margin-bottom: 4px;
+}
+
+.view-title-group p {
+  font-size: 14.5px;
+  color: var(--text-dim);
+  line-height: 1.5;
+}
+
+/* ==========================================================================
    Mobile Bottom Navigation Bar
    ========================================================================== */
+
 
 .mobile-bottom-nav {
   display: none;
@@ -1209,11 +1238,9 @@ a {
   left: 0;
   right: 0;
   z-index: 45;
-  background: rgba(255, 255, 255, 0.94);
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
-  border-top: 1px solid var(--border);
-  box-shadow: 0 -4px 16px rgba(15, 23, 42, 0.06);
+  background: #ffffff;
+  border-top: 1px solid #e2e8f0;
+  box-shadow: 0 -4px 20px rgba(15, 23, 42, 0.08);
   padding-bottom: env(safe-area-inset-bottom, 0px);
 }
 
@@ -1425,7 +1452,61 @@ a {
   }
 
   .main-content {
-    padding: 14px 12px 24px;
+    padding: 14px 12px calc(88px + env(safe-area-inset-bottom, 16px));
+  }
+
+  .view-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+    margin-bottom: 18px;
+  }
+
+  .view-title-group h2 {
+    font-size: 20px;
+    letter-spacing: -0.3px;
+  }
+
+  .view-title-group p {
+    font-size: 13.5px;
+    line-height: 1.45;
+  }
+
+  .view-header .btn-primary {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .empty-state-card {
+    padding: 34px 18px;
+    margin: 12px 0 24px;
+    width: 100%;
+    border-radius: var(--radius-xl);
+  }
+
+  .empty-state-icon-box {
+    width: 52px;
+    height: 52px;
+    margin-bottom: 16px;
+  }
+
+  .empty-state-title {
+    font-size: 18px;
+  }
+
+  .empty-state-desc {
+    font-size: 13.5px;
+    line-height: 1.5;
+    margin-bottom: 20px;
+  }
+
+  .empty-state-actions {
+    width: 100%;
+  }
+
+  .empty-state-actions .btn-primary {
+    width: 100%;
+    justify-content: center;
   }
 
   .welcome-banner {
@@ -1496,21 +1577,24 @@ a {
     padding: 16px 18px calc(16px + env(safe-area-inset-bottom, 12px));
   }
 
-  /* GPA Summary Card on Mobile */
+  /* GPA Summary Card on Mobile (Balanced 3-column command bar) */
   .gpa-summary-card {
     display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 16px;
-    padding: 22px 18px;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
+    padding: 18px 12px;
     border-radius: var(--radius-lg);
+    text-align: center;
   }
 
   .gpa-big-number {
-    font-size: 34px;
+    font-size: 26px;
+    line-height: 1.1;
+    margin-bottom: 4px;
   }
 
   .gpa-stat-title {
-    font-size: 13px;
+    font-size: 11px;
     font-weight: 700;
   }
 
@@ -1534,13 +1618,25 @@ a {
 
 @media (max-width: 480px) {
   .gpa-summary-card {
-    grid-template-columns: 1fr;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 6px;
+    padding: 16px 8px;
     text-align: center;
   }
 
-  .main-content {
-    padding: 12px 10px 20px;
+  .gpa-big-number {
+    font-size: 22px;
   }
+
+  .gpa-stat-title {
+    font-size: 10px;
+    letter-spacing: 0;
+  }
+
+  .main-content {
+    padding: 12px 10px calc(88px + env(safe-area-inset-bottom, 16px));
+  }
+
 
   .section-header-row {
     flex-direction: column;

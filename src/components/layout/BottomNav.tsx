@@ -21,7 +21,7 @@ export const BottomNav: React.FC = () => {
   const { activeSection, setActiveSection, courses, assessments } = usePlanner();
 
   const items: BottomNavItem[] = [
-    { id: 'dashboard', label: 'Overview', icon: LayoutDashboard },
+    { id: 'dashboard', label: 'Home', icon: LayoutDashboard },
     { id: 'courses', label: 'Courses', icon: BookOpen, badge: courses.length > 0 ? courses.length : undefined },
     { id: 'assessments', label: 'Tasks', icon: CalendarCheck, badge: assessments.length > 0 ? assessments.length : undefined },
     { id: 'results', label: 'Results', icon: TrendingUp },

@@ -19,7 +19,7 @@ export const CoursesView: React.FC = () => {
       <div className="view-header">
         <div className="view-title-group">
           <h2>
-            Academic Courses
+            Courses
             {courses.length > 0 && (
               <span
                 style={{
@@ -33,7 +33,7 @@ export const CoursesView: React.FC = () => {
               </span>
             )}
           </h2>
-          <p>Manage your curriculum, credit weights, and syllabus targets</p>
+          <p>Manage your enrolled subjects, credits, and target grades</p>
         </div>
         <button
           type="button"
@@ -48,11 +48,12 @@ export const CoursesView: React.FC = () => {
       {courses.length === 0 ? (
         <EmptyState
           icon={<BookOpen size={32} />}
-          title="No courses registered yet"
-          description="Courses are the backbone of UniPlanner. By adding a course, you can track assessment weights, deadlines, and automatically compute your semester GPA."
+          title="No courses added yet"
+          description="Add your courses to track assignments, exams, and calculate your GPA automatically."
           actionText="Add Your First Course"
           onAction={() => openAddCourseModal()}
         />
+
       ) : (
         <div className="courses-grid">
           {courses.map((course) => {

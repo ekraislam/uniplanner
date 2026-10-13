@@ -9,7 +9,7 @@ class MockHistory {
     this.currentIndex = -1;
   }
 
-  replaceState(state, title) {
+  replaceState(state, _title) {
     if (this.currentIndex === -1) {
       this.stack = [state];
       this.currentIndex = 0;
@@ -18,7 +18,7 @@ class MockHistory {
     }
   }
 
-  pushState(state, title) {
+  pushState(state, _title) {
     this.stack = this.stack.slice(0, this.currentIndex + 1);
     this.stack.push(state);
     this.currentIndex++;

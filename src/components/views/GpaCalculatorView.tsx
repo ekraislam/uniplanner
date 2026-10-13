@@ -138,8 +138,8 @@ export const GpaCalculatorView: React.FC = () => {
       <div>
         <div className="view-header">
           <div className="view-title-group">
-            <h2>Semester GPA & What-If Simulator</h2>
-            <p>Compute weighted semester GPA and simulate prospective grade scenarios</p>
+            <h2>GPA Calculator & Target Planner</h2>
+            <p>Calculate your semester GPA, confirmed grades, and target CGPA</p>
           </div>
         </div>
 
@@ -147,26 +147,26 @@ export const GpaCalculatorView: React.FC = () => {
         <div className="gpa-summary-card" style={{ marginBottom: '24px' }}>
           <div className="gpa-summary-stat">
             <div className="gpa-big-number">—</div>
-            <div className="gpa-stat-title">Semester Confirmed GPA</div>
+            <div className="gpa-stat-title">Semester GPA</div>
           </div>
           <div className="gpa-summary-stat">
             <div className="gpa-big-number" style={{ color: '#fed7aa' }}>
               —
             </div>
-            <div className="gpa-stat-title">Cumulative GPA</div>
+            <div className="gpa-stat-title">Total CGPA</div>
           </div>
           <div className="gpa-summary-stat">
             <div className="gpa-big-number" style={{ color: '#a7f3d0' }}>
               0
             </div>
-            <div className="gpa-stat-title">Enrolled Credits</div>
+            <div className="gpa-stat-title">Total Credits</div>
           </div>
         </div>
 
         <EmptyState
           icon={<BookOpen size={32} />}
-          title="No registered courses in planner"
-          description="Your official academic record currently has 0 registered courses. Add your courses with their credit hours to compute your weighted semester GPA."
+          title="No courses in planner yet"
+          description="Add your courses with their credit hours to calculate your semester GPA and CGPA automatically."
           actionText="Add Course to Planner"
           onAction={() => openAddCourseModal()}
         />
@@ -178,8 +178,8 @@ export const GpaCalculatorView: React.FC = () => {
     <div>
       <div className="view-header">
         <div className="view-title-group">
-          <h2>Semester GPA & What-If Simulator</h2>
-          <p>Compute weighted semester GPA, confirm official grades, and simulate projections</p>
+          <h2>GPA Calculator & Target Planner</h2>
+          <p>Calculate your semester GPA, confirmed grades, and target CGPA</p>
         </div>
       </div>
 
@@ -189,7 +189,7 @@ export const GpaCalculatorView: React.FC = () => {
           <div className="gpa-big-number">
             {semesterGpa.includedCredits > 0 ? semesterGpa.gpaFormatted : '—'}
           </div>
-          <div className="gpa-stat-title">Semester Confirmed GPA</div>
+          <div className="gpa-stat-title">Semester GPA</div>
           <span style={{ fontSize: '13px', color: '#e2e8f0', marginTop: '6px', display: 'block' }}>
             {semesterGpa.includedCredits > 0
               ? `${semesterGpa.includedCredits} credits (${semesterGpa.includedCourses} courses finalized)`
@@ -205,12 +205,12 @@ export const GpaCalculatorView: React.FC = () => {
             {semesterGpa.isSimulating ? semesterGpa.simulatedGpaFormatted : '—'}
           </div>
           <div className="gpa-stat-title">
-            {semesterGpa.isSimulating ? 'What-If Projected GPA' : 'Projected GPA (Inactive)'}
+            {semesterGpa.isSimulating ? 'Target Projected GPA' : 'Projected GPA (Inactive)'}
           </div>
           <span style={{ fontSize: '13px', color: '#e2e8f0', marginTop: '6px', display: 'block' }}>
             {semesterGpa.isSimulating
-              ? `${semesterGpa.simulatedCoursesCount} hypothetical grade(s) tested`
-              : 'Pick hypothetical grades in table'}
+              ? `${semesterGpa.simulatedCoursesCount} target grade(s) tested`
+              : 'Test target grades in table'}
           </span>
         </div>
 
@@ -218,7 +218,7 @@ export const GpaCalculatorView: React.FC = () => {
           <div className="gpa-big-number" style={{ color: '#38bdf8' }}>
             {cumulativeGpa.confirmedCredits > 0 ? cumulativeGpa.gpaFormatted : '—'}
           </div>
-          <div className="gpa-stat-title">Cumulative Career GPA</div>
+          <div className="gpa-stat-title">Total CGPA</div>
           <span style={{ fontSize: '13px', color: '#e2e8f0', marginTop: '6px', display: 'block' }}>
             {cumulativeGpa.confirmedCredits > 0
               ? `${cumulativeGpa.confirmedCredits} credits completed (${cumulativeGpa.confirmedCourses} courses)`

@@ -57,17 +57,17 @@ export const DashboardView: React.FC = () => {
           {courses.length > 0
             ? settings.studentName
               ? `Welcome back, ${settings.studentName}`
-              : 'Your Academic Command Center'
-            : 'Welcome to your University Workspace'}
+              : 'Welcome to UniPlanner'
+            : 'Welcome to UniPlanner'}
         </h2>
         <p className="welcome-text">
           {courses.length > 0 ? (
             <>
-              You have <strong>{courses.length} enrolled courses</strong> ({totalCredits} credit hours) and{' '}
-              <strong>{upcomingDeadlines.length} upcoming deadlines</strong> in {settings.currentTerm}. Keep your momentum going!
+              You have <strong>{courses.length} enrolled courses</strong> ({totalCredits} credits) and{' '}
+              <strong>{upcomingDeadlines.length} upcoming deadlines</strong> in {settings.currentTerm}. Keep up the great work!
             </>
           ) : (
-            'UniPlanner helps you organize your syllabus, stay on top of assignment deadlines, and calculate your target GPA. Begin your term by registering your enrolled courses.'
+            'UniPlanner helps you organize your subjects, track quiz and exam deadlines, and calculate your GPA automatically.'
           )}
         </p>
         <div style={{ display: 'flex', gap: '12px', flexWrap: 'wrap' }}>
@@ -95,7 +95,7 @@ export const DashboardView: React.FC = () => {
       {/* Top Level Metric Cards (4 Balanced Spacious Cards) */}
       <div className="stat-grid">
         <StatCard
-          label="Cumulative Career GPA"
+          label="Overall CGPA"
           value={cumulativeGpa.gpaFormatted}
           subtext={
             cumulativeGpa.confirmedCredits > 0
@@ -121,9 +121,9 @@ export const DashboardView: React.FC = () => {
           iconColor="#059669"
         />
         <StatCard
-          label="Academic Course Load"
+          label="Enrolled Courses"
           value={`${courses.length} Courses`}
-          subtext={`${totalCredits} registered credit hours`}
+          subtext={`${totalCredits} total credit hours`}
           icon={<BookOpen size={24} />}
           iconBg="#f5f3ff"
           iconColor="#7c3aed"

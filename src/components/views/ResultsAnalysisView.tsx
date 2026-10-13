@@ -42,14 +42,14 @@ export const ResultsAnalysisView: React.FC = () => {
       <div>
         <div className="view-header">
           <div className="view-title-group">
-            <h2>Results & Grade Analysis</h2>
-            <p>Course-specific marks distribution, confirmed vs pending grades, and target forecasts</p>
+            <h2>Grade Summary & Analytics</h2>
+            <p>Marks breakdown, confirmed grades, and target forecasts per course</p>
           </div>
         </div>
         <EmptyState
           icon={<TrendingUp size={32} />}
-          title="No courses enrolled yet"
-          description="Performance analysis, marks distributions, and target grade calculations are tracked per course. Start by adding your first course."
+          title="No courses added yet"
+          description="Marks breakdown and target grade analysis are tracked per course. Start by adding your first course."
           actionText="Add Your First Course"
           onAction={() => openAddCourseModal()}
         />
@@ -189,9 +189,10 @@ export const ResultsAnalysisView: React.FC = () => {
       {/* View Header */}
       <div className="view-header">
         <div className="view-title-group">
-          <h2>Results & Grade Analysis</h2>
-          <p>Course-specific marks distribution, confirmed vs pending grades, and target forecasts</p>
+          <h2>Grade Summary & Analytics</h2>
+          <p>Marks breakdown, confirmed grades, and target forecasts per course</p>
         </div>
+
 
         {activeCourse && (
           <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>

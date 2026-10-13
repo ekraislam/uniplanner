@@ -6,30 +6,31 @@ import type { NavSection } from '../../types';
 
 const SECTION_TITLES: Record<NavSection, { title: string; subtitle: string }> = {
   dashboard: {
-    title: 'Academic Overview',
-    subtitle: 'Unified student dashboard & term progress',
+    title: 'Overview',
+    subtitle: 'Your study summary and term progress',
   },
   courses: {
-    title: 'Enrolled Courses',
-    subtitle: 'Manage syllabus, credit hours, and modules',
+    title: 'Courses',
+    subtitle: 'Your subjects, credits, and target grades',
   },
   assessments: {
-    title: 'Assessments & Deadlines',
-    subtitle: 'Assignments, quizzes, labs, and examination schedule',
+    title: 'Exams & Tasks',
+    subtitle: 'Quizzes, midterms, assignments & finals',
   },
   results: {
-    title: 'Results Analysis',
-    subtitle: 'Grade distribution, trends, and milestone statistics',
+    title: 'Grade Analytics',
+    subtitle: 'Marks breakdown and academic performance',
   },
   'gpa-calculator': {
-    title: 'GPA Calculator & Planner',
-    subtitle: 'Target forecasting and cumulative grade simulation',
+    title: 'GPA Calculator',
+    subtitle: 'Calculate your term GPA and target CGPA',
   },
   settings: {
-    title: 'Academic Settings',
-    subtitle: 'Grading scale standards, profile, and system preferences',
+    title: 'Settings',
+    subtitle: 'Grading scale, profile, and system settings',
   },
 };
+
 
 export const Header: React.FC = () => {
   const { activeSection, toggleSidebar, settings, openAddCourseModal, openInstallModal } = usePlanner();

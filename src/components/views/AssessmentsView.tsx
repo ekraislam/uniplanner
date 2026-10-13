@@ -46,7 +46,7 @@ export const AssessmentsView: React.FC = () => {
       <div className="view-header">
         <div className="view-title-group">
           <h2>
-            Assessments & Deliverables
+            Exams & Assignments
             {assessments.length > 0 && (
               <span
                 style={{
@@ -60,7 +60,7 @@ export const AssessmentsView: React.FC = () => {
               </span>
             )}
           </h2>
-          <p>Track examinations, quizzes, assignments, and practical project deliverables</p>
+          <p>Track quizzes, midterms, assignments, and finals</p>
         </div>
 
         {courses.length > 0 && (
@@ -78,16 +78,16 @@ export const AssessmentsView: React.FC = () => {
       {courses.length === 0 ? (
         <EmptyState
           icon={<BookOpen size={32} />}
-          title="Create a course before scheduling assessments"
-          description="Assessments must belong to an enrolled course to organize weightings and calculate grades properly. Start by creating your first course."
+          title="Add a course first"
+          description="You need to add at least one course before adding quizzes, assignments, or exams."
           actionText="Add Your First Course"
           onAction={() => openAddCourseModal()}
         />
       ) : assessments.length === 0 ? (
         <EmptyState
           icon={<CalendarCheck size={32} />}
-          title="No assessments created yet"
-          description={`You have ${courses.length} course${courses.length > 1 ? 's' : ''} enrolled. Start tracking midterms, quizzes, class tests, and project assignments.`}
+          title="No exams or tasks added yet"
+          description={`You have ${courses.length} course${courses.length > 1 ? 's' : ''} enrolled. Add your upcoming quizzes, midterms, and assignments to stay on track.`}
           actionText="Add First Assessment"
           onAction={() => openAddAssessmentModal()}
         />

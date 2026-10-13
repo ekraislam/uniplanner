@@ -26,11 +26,12 @@ interface NavItemConfig {
 const NAV_ITEMS: NavItemConfig[] = [
   { id: 'dashboard', label: 'Dashboard', icon: LayoutDashboard },
   { id: 'courses', label: 'Courses', icon: BookOpen, showCount: true },
-  { id: 'assessments', label: 'Assessments', icon: CalendarCheck, showCount: true },
-  { id: 'results', label: 'Results Analysis', icon: TrendingUp },
+  { id: 'assessments', label: 'Exams & Tasks', icon: CalendarCheck, showCount: true },
+  { id: 'results', label: 'Grade Analytics', icon: TrendingUp },
   { id: 'gpa-calculator', label: 'GPA Calculator', icon: Calculator },
   { id: 'settings', label: 'Settings', icon: Settings },
 ];
+
 
 export const Sidebar: React.FC = () => {
   const {
