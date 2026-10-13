@@ -3,7 +3,7 @@
  * Provides offline application shell, safe caching, and deployment update handling.
  */
 
-const CACHE_NAME = 'uniplanner-shell-v1';
+const CACHE_NAME = 'uniplanner-shell-v2';
 
 // Essential application shell precache resources
 const PRECACHE_ASSETS = [

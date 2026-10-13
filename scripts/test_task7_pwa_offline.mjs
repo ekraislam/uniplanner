@@ -66,7 +66,7 @@ assert(swCode.includes("addEventListener('fetch'"), 'sw.js registers fetch event
 assert(swCode.includes("addEventListener('message'"), 'sw.js registers message event');
 assert(swCode.includes('SKIP_WAITING'), 'sw.js handles SKIP_WAITING message');
 assert(swCode.includes('clients.claim()'), 'sw.js claims clients upon activation');
-assert(swCode.includes('uniplanner-shell-v1'), 'sw.js declares cache version');
+assert(swCode.includes('uniplanner-shell-v2'), 'sw.js declares cache version');
 assert(swCode.includes("request.mode === 'navigate'"), 'sw.js implements navigation request handler');
 assert(swCode.includes("networkResponse.status === 200"), 'sw.js ensures only status 200 responses are cached');
 assert(swCode.includes("/assets/"), 'sw.js caches Vite built assets');
