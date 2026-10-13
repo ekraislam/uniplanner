@@ -38,7 +38,7 @@ export const RestoreBackupModal: React.FC<RestoreBackupModalProps> = ({
       title="Confirm & Restore Backup Data"
       maxWidth="620px"
     >
-      <div>
+      <div className="modal-body">
         {/* Warning Alert Banner */}
         <div
           role="alert"
@@ -50,7 +50,6 @@ export const RestoreBackupModal: React.FC<RestoreBackupModalProps> = ({
             color: 'var(--danger)',
             fontSize: '13.5px',
             lineHeight: 1.5,
-            marginBottom: '20px',
             display: 'flex',
             alignItems: 'flex-start',
             gap: '12px',
@@ -71,7 +70,6 @@ export const RestoreBackupModal: React.FC<RestoreBackupModalProps> = ({
             display: 'grid',
             gridTemplateColumns: '1fr 1fr',
             gap: '14px',
-            marginBottom: '20px',
           }}
         >
           {/* Current Workspace State */}
@@ -133,7 +131,7 @@ export const RestoreBackupModal: React.FC<RestoreBackupModalProps> = ({
 
         {/* Course Codes Preview */}
         {preview.courseCodes.length > 0 ? (
-          <div style={{ marginBottom: '20px' }}>
+          <div>
             <label style={{ fontSize: '12.5px', fontWeight: 600, color: 'var(--text-main)', display: 'block', marginBottom: '6px' }}>
               Courses included in this backup ({preview.courseCodes.length}):
             </label>
@@ -163,7 +161,6 @@ export const RestoreBackupModal: React.FC<RestoreBackupModalProps> = ({
               borderRadius: 'var(--radius-sm)',
               fontSize: '12.5px',
               color: 'var(--text-muted)',
-              marginBottom: '20px',
             }}
           >
             This backup represents an empty installation (0 courses, 0 assessments). Restoring it will initialize your workspace with empty user records.
@@ -171,31 +168,31 @@ export const RestoreBackupModal: React.FC<RestoreBackupModalProps> = ({
         )}
 
         {/* Meta details */}
-        <div style={{ fontSize: '12px', color: 'var(--text-muted)', marginBottom: '24px', lineHeight: 1.4 }}>
+        <div style={{ fontSize: '12px', color: 'var(--text-muted)', lineHeight: 1.4 }}>
           Schema version: <strong>v{preview.schemaVersion}</strong> • Atomic verification: <strong>Passed (0 errors)</strong>
         </div>
+      </div>
 
-        {/* Action Buttons */}
-        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-          <button
-            type="button"
-            className="btn-secondary"
-            onClick={onClose}
-          >
-            <X size={15} />
-            <span>Cancel & Keep Current Data</span>
-          </button>
+      {/* Action Buttons */}
+      <div className="modal-footer" style={{ justifyContent: 'space-between' }}>
+        <button
+          type="button"
+          className="btn-secondary"
+          onClick={onClose}
+        >
+          <X size={15} />
+          <span>Cancel & Keep Current Data</span>
+        </button>
 
-          <button
-            type="button"
-            className="btn-danger"
-            style={{ fontWeight: 700 }}
-            onClick={handleConfirm}
-          >
-            <Database size={15} />
-            <span>Confirm & Replace All Data</span>
-          </button>
-        </div>
+        <button
+          type="button"
+          className="btn-danger"
+          style={{ fontWeight: 700 }}
+          onClick={handleConfirm}
+        >
+          <Database size={15} />
+          <span>Confirm & Replace All Data</span>
+        </button>
       </div>
     </Modal>
   );

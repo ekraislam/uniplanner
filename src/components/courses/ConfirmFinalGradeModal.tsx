@@ -52,122 +52,121 @@ const ConfirmFinalGradeForm: React.FC<ConfirmFinalGradeFormProps> = ({
 
   return (
     <form onSubmit={handleSubmit}>
-      {/* Course Header Info */}
-      <div
-        style={{
-          padding: '16px 18px',
-          backgroundColor: 'var(--bg-subtle)',
-          borderRadius: 'var(--radius-md)',
-          marginBottom: '20px',
-          borderLeft: `4px solid ${course.color}`,
-        }}
-      >
-        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '6px' }}>
-          <strong style={{ fontSize: '17px', color: 'var(--text-main)' }}>{course.code}</strong>
-          <span style={{ fontSize: '14px', fontWeight: 600, color: 'var(--text-muted)' }}>
-            {course.credits} Credits • {course.semester}
-          </span>
-        </div>
-        <div style={{ fontSize: '15px', fontWeight: 600, color: 'var(--text-main)' }}>{course.name}</div>
-      </div>
-
-      {/* Marks-Based Reference Warning */}
-      {marksEstimate ? (
+      <div className="modal-body">
+        {/* Course Header Info */}
         <div
           style={{
-            padding: '14px 16px',
-            backgroundColor: '#eff6ff',
-            border: '1px solid #bfdbfe',
-            borderRadius: 'var(--radius-md)',
-            color: '#1e40af',
-            fontSize: '14px',
-            marginBottom: '20px',
-            lineHeight: 1.5,
-          }}
-        >
-          <div style={{ display: 'flex', alignItems: 'center', gap: '8px', fontWeight: 700, marginBottom: '4px' }}>
-            <AlertCircle size={16} />
-            <span>Current Assessed Work: {marksEstimate.percentage?.toFixed(1)}% ({marksEstimate.grade ? `~${marksEstimate.grade}` : 'In progress'})</span>
-          </div>
-          <p style={{ margin: 0, fontSize: '13px', color: '#1e3a8a' }}>
-            Note: This estimate reflects graded work to date and is <strong>not</strong> an official grade. Only confirm an official final grade when officially awarded by your university.
-          </p>
-        </div>
-      ) : (
-        <div
-          style={{
-            padding: '12px 16px',
+            padding: '16px 18px',
             backgroundColor: 'var(--bg-subtle)',
             borderRadius: 'var(--radius-md)',
-            color: 'var(--text-muted)',
-            fontSize: '13.5px',
-            marginBottom: '20px',
+            borderLeft: `4px solid ${course.color}`,
           }}
         >
-          No assessed marks available for automatic projection. Select your officially confirmed final letter grade below.
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '6px' }}>
+            <strong style={{ fontSize: '17px', color: 'var(--text-main)' }}>{course.code}</strong>
+            <span style={{ fontSize: '14px', fontWeight: 600, color: 'var(--text-muted)' }}>
+              {course.credits} Credits • {course.semester}
+            </span>
+          </div>
+          <div style={{ fontSize: '15px', fontWeight: 600, color: 'var(--text-main)' }}>{course.name}</div>
         </div>
-      )}
 
-      {/* Select Official Final Grade */}
-      <div className="form-group" style={{ marginBottom: '18px' }}>
-        <label className="form-label" htmlFor="final-grade-select" style={{ fontSize: '14.5px', fontWeight: 700 }}>
-          Official Final Letter Grade:
-        </label>
-        <select
-          id="final-grade-select"
-          className="form-select"
-          style={{ fontSize: '15.5px' }}
-          value={selectedGrade}
-          onChange={(e) => {
-            setSelectedGrade(e.target.value);
-            const autoPt = getGradePointForGrade(e.target.value, gpaConfig);
-            if (autoPt !== null) {
-              setCustomPoint(String(autoPt));
-            }
-          }}
-        >
-          {rules.map((r) => (
-            <option key={r.grade} value={r.grade}>
-              {r.grade} ({r.gradePoint.toFixed(2)} grade points)
-              {r.minPercentage !== undefined ? ` — min ${r.minPercentage}%` : ''}
-            </option>
-          ))}
-        </select>
-      </div>
-
-      {/* Custom Grade Point Toggle */}
-      <div style={{ marginBottom: '22px' }}>
-        <label style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '14px', cursor: 'pointer', color: 'var(--text-main)' }}>
-          <input
-            type="checkbox"
-            checked={useCustomPoint}
-            onChange={(e) => setUseCustomPoint(e.target.checked)}
-            style={{ width: '16px', height: '16px' }}
-          />
-          <span>Override default grade point for this specific course</span>
-        </label>
-
-        {useCustomPoint && (
-          <div className="form-group" style={{ marginTop: '12px' }}>
-            <label className="form-label" htmlFor="custom-point-input" style={{ fontSize: '14px' }}>
-              Custom Grade Point (Max {gpaConfig.scaleMax}):
-            </label>
-            <input
-              id="custom-point-input"
-              type="number"
-              step="0.01"
-              min="0"
-              max={gpaConfig.scaleMax}
-              className="form-input"
-              value={customPoint}
-              onChange={(e) => setCustomPoint(e.target.value)}
-            />
+        {/* Marks-Based Reference Warning */}
+        {marksEstimate ? (
+          <div
+            style={{
+              padding: '14px 16px',
+              backgroundColor: '#eff6ff',
+              border: '1px solid #bfdbfe',
+              borderRadius: 'var(--radius-md)',
+              color: '#1e40af',
+              fontSize: '14px',
+              lineHeight: 1.5,
+            }}
+          >
+            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', fontWeight: 700, marginBottom: '4px' }}>
+              <AlertCircle size={16} />
+              <span>Current Assessed Work: {marksEstimate.percentage?.toFixed(1)}% ({marksEstimate.grade ? `~${marksEstimate.grade}` : 'In progress'})</span>
+            </div>
+            <p style={{ margin: 0, fontSize: '13px', color: '#1e3a8a' }}>
+              Note: This estimate reflects graded work to date and is <strong>not</strong> an official grade. Only confirm an official final grade when officially awarded by your university.
+            </p>
+          </div>
+        ) : (
+          <div
+            style={{
+              padding: '12px 16px',
+              backgroundColor: 'var(--bg-subtle)',
+              borderRadius: 'var(--radius-md)',
+              color: 'var(--text-muted)',
+              fontSize: '13.5px',
+            }}
+          >
+            No assessed marks available for automatic projection. Select your officially confirmed final letter grade below.
           </div>
         )}
+
+        {/* Select Official Final Grade */}
+        <div className="form-group">
+          <label className="form-label" htmlFor="final-grade-select" style={{ fontSize: '14.5px', fontWeight: 700 }}>
+            Official Final Letter Grade:
+          </label>
+          <select
+            id="final-grade-select"
+            className="form-select"
+            style={{ fontSize: '15.5px' }}
+            value={selectedGrade}
+            onChange={(e) => {
+              setSelectedGrade(e.target.value);
+              const autoPt = getGradePointForGrade(e.target.value, gpaConfig);
+              if (autoPt !== null) {
+                setCustomPoint(String(autoPt));
+              }
+            }}
+          >
+            {rules.map((r) => (
+              <option key={r.grade} value={r.grade}>
+                {r.grade} ({r.gradePoint.toFixed(2)} grade points)
+                {r.minPercentage !== undefined ? ` — min ${r.minPercentage}%` : ''}
+              </option>
+            ))}
+          </select>
+        </div>
+
+        {/* Custom Grade Point Toggle */}
+        <div>
+          <label style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '14px', cursor: 'pointer', color: 'var(--text-main)' }}>
+            <input
+              type="checkbox"
+              checked={useCustomPoint}
+              onChange={(e) => setUseCustomPoint(e.target.checked)}
+              style={{ width: '16px', height: '16px' }}
+            />
+            <span>Override default grade point for this specific course</span>
+          </label>
+
+          {useCustomPoint && (
+            <div className="form-group" style={{ marginTop: '12px' }}>
+              <label className="form-label" htmlFor="custom-point-input" style={{ fontSize: '14px' }}>
+                Custom Grade Point (Max {gpaConfig.scaleMax}):
+              </label>
+              <input
+                id="custom-point-input"
+                type="number"
+                step="0.01"
+                min="0"
+                max={gpaConfig.scaleMax}
+                className="form-input"
+                value={customPoint}
+                onChange={(e) => setCustomPoint(e.target.value)}
+              />
+            </div>
+          )}
+        </div>
       </div>
 
       {/* Actions */}
-      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '12px', marginTop: '24px' }}>
+      <div className="modal-footer" style={{ justifyContent: 'space-between' }}>
         {course.finalGrade ? (
           <button
             type="button"

@@ -275,18 +275,18 @@ export const InstallGuideModal: React.FC = () => {
             </div>
           </div>
         </div>
+      </div>
 
-        {/* Modal Footer Close */}
-        <div style={{ display: 'flex', justifyContent: 'flex-end', marginTop: '22px' }}>
-          <button
-            type="button"
-            className="btn-secondary"
-            onClick={closeInstallModal}
-            style={{ minHeight: '44px', padding: '10px 24px', fontSize: '15px', fontWeight: 600 }}
-          >
-            বুঝেছি / Close
-          </button>
-        </div>
+      {/* Modal Footer Close */}
+      <div className="modal-footer">
+        <button
+          type="button"
+          className="btn-secondary"
+          onClick={closeInstallModal}
+          style={{ minHeight: '40px', padding: '8px 20px', fontSize: '14.5px', fontWeight: 600 }}
+        >
+          বুঝেছি / Close
+        </button>
       </div>
     </Modal>
   );

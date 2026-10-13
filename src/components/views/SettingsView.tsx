@@ -1048,7 +1048,7 @@ export const SettingsView: React.FC = () => {
         title="Reset All Data"
         maxWidth="500px"
       >
-        <div style={{ padding: '6px 0' }}>
+        <div className="modal-body" style={{ padding: '20px 24px' }}>
           <div
             style={{
               width: '56px',
@@ -1084,13 +1084,13 @@ export const SettingsView: React.FC = () => {
               color: 'var(--text-muted)',
               lineHeight: 1.5,
               textAlign: 'center',
-              marginBottom: '20px',
+              marginBottom: '16px',
             }}
           >
             This action cannot be undone. All your enrolled courses, assessments, and grade records on this device will be cleared to a fresh slate.
           </p>
 
-          <div className="form-group" style={{ marginBottom: '20px' }}>
+          <div className="form-group">
             <label
               htmlFor="wipe-confirmation-input"
               className="form-label"
@@ -1113,35 +1113,35 @@ export const SettingsView: React.FC = () => {
               autoFocus
             />
           </div>
+        </div>
 
-          <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '10px' }}>
-            <button
-              type="button"
-              className="btn-secondary"
-              onClick={() => {
-                setShowResetConfirm(false);
-                setResetConfirmText('');
-              }}
-            >
-              Cancel
-            </button>
-            <button
-              type="button"
-              className="btn-danger"
-              disabled={resetConfirmText.trim() !== 'RESET'}
-              style={{
-                opacity: resetConfirmText.trim() === 'RESET' ? 1 : 0.45,
-                cursor: resetConfirmText.trim() === 'RESET' ? 'pointer' : 'not-allowed',
-                display: 'inline-flex',
-                alignItems: 'center',
-                gap: '6px',
-              }}
-              onClick={handleReset}
-            >
-              <Trash2 size={15} />
-              <span>Permanently Wipe All Data</span>
-            </button>
-          </div>
+        <div className="modal-footer">
+          <button
+            type="button"
+            className="btn-secondary"
+            onClick={() => {
+              setShowResetConfirm(false);
+              setResetConfirmText('');
+            }}
+          >
+            Cancel
+          </button>
+          <button
+            type="button"
+            className="btn-danger"
+            disabled={resetConfirmText.trim() !== 'RESET'}
+            style={{
+              opacity: resetConfirmText.trim() === 'RESET' ? 1 : 0.45,
+              cursor: resetConfirmText.trim() === 'RESET' ? 'pointer' : 'not-allowed',
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: '6px',
+            }}
+            onClick={handleReset}
+          >
+            <Trash2 size={15} />
+            <span>Permanently Wipe All Data</span>
+          </button>
         </div>
       </Modal>
 
