@@ -178,13 +178,6 @@ export const SettingsView: React.FC = () => {
   };
 
   const handleReset = () => {
-    // Safety Net: Trigger emergency backup export before clearing local storage
-    try {
-      triggerExportBackup();
-    } catch (err) {
-      console.warn('Pre-wipe backup export note:', err);
-    }
-
     resetToEmptyData();
     setStudentName('');
     setUniversityName('');
@@ -195,10 +188,11 @@ export const SettingsView: React.FC = () => {
     setGpaConfig(getDefaultGpaConfig('4.0_ugc'));
     setShowResetConfirm(false);
     setResetConfirmText('');
-    setBackupNotice('All data has been reset to an empty slate. An emergency safety backup was downloaded to your device.');
+    setBackupNotice('All courses, assessments, and grade records have been reset successfully.');
     setImportErrors([]);
-    setTimeout(() => setBackupNotice(null), 7000);
+    setTimeout(() => setBackupNotice(null), 5000);
   };
+
 
   // Export backup download trigger
   const handleExportBackup = () => {
@@ -1051,7 +1045,7 @@ export const SettingsView: React.FC = () => {
           setShowResetConfirm(false);
           setResetConfirmText('');
         }}
-        title="Confirm Irreversible Data Wipe"
+        title="Reset All Data"
         maxWidth="500px"
       >
         <div style={{ padding: '6px 0' }}>
@@ -1081,7 +1075,7 @@ export const SettingsView: React.FC = () => {
               marginBottom: '8px',
             }}
           >
-            Permanently Wipe All Academic Data?
+            Reset All Academic Data?
           </h4>
 
           <p
@@ -1090,32 +1084,11 @@ export const SettingsView: React.FC = () => {
               color: 'var(--text-muted)',
               lineHeight: 1.5,
               textAlign: 'center',
-              marginBottom: '16px',
-            }}
-          >
-            This action cannot be undone. All your enrolled courses, recorded assessments, confirmed grades, target calculations, and customized rules on this device will be permanently erased.
-          </p>
-
-          <div
-            style={{
-              padding: '12px 14px',
-              backgroundColor: '#eff6ff',
-              borderRadius: 'var(--radius-md)',
-              border: '1px solid #bfdbfe',
-              fontSize: '12.5px',
-              color: '#1e40af',
               marginBottom: '20px',
-              display: 'flex',
-              alignItems: 'center',
-              gap: '10px',
-              lineHeight: 1.4,
             }}
           >
-            <Download size={18} style={{ flexShrink: 0, color: '#2563eb' }} />
-            <span>
-              <strong>Safety Net Enabled:</strong> UniPlanner will automatically download an emergency safety backup to your device right before wiping.
-            </span>
-          </div>
+            This action cannot be undone. All your enrolled courses, assessments, and grade records on this device will be cleared to a fresh slate.
+          </p>
 
           <div className="form-group" style={{ marginBottom: '20px' }}>
             <label
@@ -1123,7 +1096,7 @@ export const SettingsView: React.FC = () => {
               className="form-label"
               style={{ fontSize: '13px', fontWeight: 600, color: 'var(--text-main)' }}
             >
-              To confirm wipe, type <strong style={{ color: 'var(--danger)', letterSpacing: '0.5px' }}>RESET</strong> below:
+              To confirm reset, type <strong style={{ color: 'var(--danger)', letterSpacing: '0.5px' }}>RESET</strong> below:
             </label>
             <input
               id="wipe-confirmation-input"
