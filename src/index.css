@@ -1301,7 +1301,7 @@ a {
 @media (max-width: 768px) {
   :root {
     --sidebar-width: 280px;
-    --header-height: 64px;
+    --header-height: 58px;
   }
 
   .mobile-bottom-nav {
@@ -1347,12 +1347,76 @@ a {
 
   .mobile-menu-btn {
     display: flex;
-    min-width: 42px;
-    min-height: 42px;
+    width: 38px;
+    height: 38px;
+    min-width: 38px;
+    min-height: 38px;
+    flex-shrink: 0;
+    border-radius: var(--radius-md);
   }
 
   .app-header {
-    padding: 0 16px;
+    height: var(--header-height);
+    min-height: var(--header-height);
+    padding: 0 12px;
+    overflow: hidden;
+    gap: 8px;
+  }
+
+  .header-left {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    min-width: 0;
+    flex: 1;
+    overflow: hidden;
+  }
+
+  .header-title-wrap {
+    min-width: 0;
+    overflow: hidden;
+    justify-content: center;
+  }
+
+  .header-title {
+    font-size: 18px;
+    font-weight: 750;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    line-height: 1.25;
+  }
+
+  /* Prevent multiline bleed under welcome banner on mobile screens */
+  .header-subtitle {
+    display: none !important;
+  }
+
+  .header-right {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    flex-shrink: 0;
+  }
+
+  .network-status-pill {
+    padding: 4px 8px;
+    font-size: 11px;
+    gap: 4px;
+    font-weight: 600;
+  }
+
+  .pwa-install-btn {
+    padding: 5px 9px;
+    font-size: 11.5px;
+    gap: 5px;
+    border-radius: var(--radius-full);
+  }
+
+  .pwa-update-btn {
+    padding: 5px 9px;
+    font-size: 11.5px;
+    gap: 5px;
   }
 
   /* On mobile phones, hide the redundant header button since MobileFab is available */
@@ -1361,21 +1425,23 @@ a {
   }
 
   .main-content {
-    padding: 16px 14px 24px;
+    padding: 14px 12px 24px;
   }
 
   .welcome-banner {
-    padding: 24px 20px;
+    padding: 20px 16px;
     border-radius: var(--radius-lg);
+    margin-bottom: 20px;
   }
 
   .welcome-heading {
-    font-size: 24px;
+    font-size: 21px;
+    letter-spacing: -0.3px;
   }
 
   .welcome-text {
-    font-size: 15.5px;
-    line-height: 1.55;
+    font-size: 14px;
+    line-height: 1.5;
   }
 
   .stat-grid {
@@ -1473,7 +1539,7 @@ a {
   }
 
   .main-content {
-    padding: 14px 12px 20px;
+    padding: 12px 10px 20px;
   }
 
   .section-header-row {
@@ -1487,17 +1553,63 @@ a {
   }
 
   .course-name {
-    font-size: 19px;
+    font-size: 18px;
   }
 
   .header-title {
-    font-size: 20px;
+    font-size: 17px;
   }
 
   .header-subtitle {
-    font-size: 12.5px;
+    display: none !important;
+  }
+
+  .welcome-banner {
+    padding: 18px 14px;
+    margin-bottom: 18px;
+  }
+
+  .welcome-heading {
+    font-size: 19px;
   }
 }
+
+@media (max-width: 390px) {
+  .app-header {
+    padding: 0 8px;
+  }
+
+  .header-title {
+    font-size: 15.5px;
+  }
+
+  /* Compact badges on narrow screens */
+  .network-status-pill {
+    padding: 5px 6px;
+  }
+
+  .network-status-pill span {
+    display: none;
+  }
+
+  .pwa-install-btn {
+    padding: 5px 8px;
+    font-size: 11px;
+    gap: 4px;
+  }
+}
+
+@media (max-width: 350px) {
+  .pwa-install-btn span {
+    display: none;
+  }
+
+  .pwa-install-btn {
+    padding: 6px;
+    border-radius: var(--radius-full);
+  }
+}
+
 
 /* Floating Action Button (Mobile Only) */
 .mobile-fab-btn {

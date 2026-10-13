@@ -19,9 +19,11 @@ import { InstallGuideModal } from './components/common/InstallGuideModal';
 import { BottomNav } from './components/layout/BottomNav';
 import { MobileFab } from './components/layout/MobileFab';
 import { Footer } from './components/layout/Footer';
+import { useDeviceBackButton } from './hooks/useDeviceBackButton';
 
 const AppContent: React.FC = () => {
   const { activeSection } = usePlanner();
+  useDeviceBackButton();
 
   const renderActiveView = () => {
     switch (activeSection) {
