@@ -6,7 +6,6 @@ import {
   TrendingUp,
   Calculator,
   Settings,
-  GraduationCap,
   X,
   Smartphone,
   Download,
@@ -80,13 +79,14 @@ export const Sidebar: React.FC = () => {
         <div className="sidebar-header">
           <div className="brand-link" onClick={() => handleNavClick('dashboard')}>
             <div className="brand-icon-wrapper">
-              <GraduationCap size={22} strokeWidth={2.4} />
+              <img src="/icons/icon-192.png" alt="UniPlanner Logo" className="brand-icon-img" />
             </div>
             <div>
               <div className="brand-title">UniPlanner</div>
               <span className="brand-badge">Academic Global</span>
             </div>
           </div>
+
           <button
             type="button"
             className="mobile-menu-btn"
