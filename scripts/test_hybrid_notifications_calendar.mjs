@@ -146,8 +146,9 @@ assert(dashContent.includes('openGoogleCalendar(a)'), 'DashboardView must have q
 const asmFile = path.resolve('src', 'components', 'views', 'AssessmentsView.tsx');
 const asmContent = fs.readFileSync(asmFile, 'utf8');
 assert(asmContent.includes('exportSemesterScheduleIcs()'), 'AssessmentsView must have semester calendar export button');
-assert(asmContent.includes('openGoogleCalendar(a)'), 'AssessmentsView must have Google Calendar link on cards');
-assert(asmContent.includes('exportAssessmentIcs(a)'), 'AssessmentsView must have .ICS download button on cards');
+assert(asmContent.includes('openGoogleCalendar'), 'AssessmentsView must have Google Calendar link on cards');
+assert(asmContent.includes('exportAssessmentIcs'), 'AssessmentsView must have .ICS download button on cards');
+assert(asmContent.includes('AssessmentCalendarMenu'), 'AssessmentsView must use unified clean AssessmentCalendarMenu');
 
 const settingsViewFile = path.resolve('src', 'components', 'views', 'SettingsView.tsx');
 const settingsViewContent = fs.readFileSync(settingsViewFile, 'utf8');

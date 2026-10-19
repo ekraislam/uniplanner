@@ -13,9 +13,12 @@ import {
   AlertTriangle,
   ShieldCheck,
   ArrowUpDown,
+  ChevronDown,
+  Smartphone,
 } from 'lucide-react';
 import { usePlanner } from '../../context/usePlanner';
 import { EmptyState } from '../common/EmptyState';
+import type { Assessment } from '../../types';
 import {
   VALID_ASSESSMENT_TYPES,
   formatDueDate,
@@ -28,6 +31,188 @@ import {
   sortAssessments,
   type AssessmentSortOption,
 } from '../../utils/priorityUtils';
+
+interface AssessmentCalendarMenuProps {
+  assessment: Assessment;
+  openGoogleCalendar: (a: Assessment) => void;
+  exportAssessmentIcs: (a: Assessment) => void;
+  t: (key: string, params?: Record<string, string | number>) => string;
+}
+
+const AssessmentCalendarMenu: React.FC<AssessmentCalendarMenuProps> = ({
+  assessment,
+  openGoogleCalendar,
+  exportAssessmentIcs,
+  t,
+}) => {
+  const [isOpen, setIsOpen] = useState(false);
+
+  return (
+    <div style={{ position: 'relative' }}>
+      <button
+        type="button"
+        style={{
+          color: 'var(--text-muted)',
+          padding: '7px 10px',
+          borderRadius: 'var(--radius-md)',
+          display: 'inline-flex',
+          alignItems: 'center',
+          gap: '4px',
+          fontSize: '12.5px',
+          fontWeight: 600,
+          backgroundColor: isOpen ? 'var(--bg-subtle)' : 'var(--bg-subtle)',
+          border: '1px solid var(--border)',
+          minHeight: '34px',
+          cursor: 'pointer',
+          transition: 'all 0.15s ease',
+        }}
+        onClick={() => setIsOpen((prev) => !prev)}
+        title={t('common.addToCalendar')}
+        aria-expanded={isOpen}
+      >
+        <Calendar size={13} color="var(--accent)" />
+        <span>{t('common.calendar')}</span>
+        <ChevronDown
+          size={12}
+          style={{
+            transform: isOpen ? 'rotate(180deg)' : 'none',
+            transition: 'transform 0.15s ease',
+          }}
+        />
+      </button>
+
+      {isOpen && (
+        <>
+          {/* Backdrop overlay to close when clicking outside */}
+          <div
+            style={{
+              position: 'fixed',
+              top: 0,
+              left: 0,
+              right: 0,
+              bottom: 0,
+              zIndex: 40,
+            }}
+            onClick={() => setIsOpen(false)}
+          />
+
+          {/* Elevated Popover Menu */}
+          <div
+            style={{
+              position: 'absolute',
+              bottom: 'calc(100% + 6px)',
+              right: 0,
+              minWidth: '220px',
+              backgroundColor: 'var(--bg-surface)',
+              border: '1px solid var(--border)',
+              borderRadius: 'var(--radius-lg)',
+              boxShadow: '0 10px 25px -5px rgba(0, 0, 0, 0.15), 0 8px 10px -6px rgba(0, 0, 0, 0.1)',
+              padding: '6px',
+              zIndex: 50,
+              display: 'flex',
+              flexDirection: 'column',
+              gap: '3px',
+            }}
+          >
+            {/* Google Calendar Option */}
+            <button
+              type="button"
+              onClick={() => {
+                openGoogleCalendar(assessment);
+                setIsOpen(false);
+              }}
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: '10px',
+                padding: '8px 10px',
+                borderRadius: 'var(--radius-md)',
+                border: 'none',
+                backgroundColor: 'transparent',
+                cursor: 'pointer',
+                textAlign: 'left',
+                width: '100%',
+                transition: 'background 0.15s ease',
+              }}
+              onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = 'var(--bg-subtle)')}
+              onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = 'transparent')}
+            >
+              <div
+                style={{
+                  width: '30px',
+                  height: '30px',
+                  borderRadius: 'var(--radius-md)',
+                  backgroundColor: '#eff6ff',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  flexShrink: 0,
+                }}
+              >
+                <Calendar size={15} color="#2563eb" />
+              </div>
+              <div>
+                <div style={{ fontSize: '13px', fontWeight: 700, color: 'var(--text-main)' }}>
+                  {t('common.googleCalendar')}
+                </div>
+                <div style={{ fontSize: '11px', color: 'var(--text-muted)' }}>
+                  {t('common.googleCalendarDesc')}
+                </div>
+              </div>
+            </button>
+
+            {/* Phone Calendar (.ics) Option */}
+            <button
+              type="button"
+              onClick={() => {
+                exportAssessmentIcs(assessment);
+                setIsOpen(false);
+              }}
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: '10px',
+                padding: '8px 10px',
+                borderRadius: 'var(--radius-md)',
+                border: 'none',
+                backgroundColor: 'transparent',
+                cursor: 'pointer',
+                textAlign: 'left',
+                width: '100%',
+                transition: 'background 0.15s ease',
+              }}
+              onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = 'var(--bg-subtle)')}
+              onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = 'transparent')}
+            >
+              <div
+                style={{
+                  width: '30px',
+                  height: '30px',
+                  borderRadius: 'var(--radius-md)',
+                  backgroundColor: '#ecfdf5',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  flexShrink: 0,
+                }}
+              >
+                <Smartphone size={15} color="#059669" />
+              </div>
+              <div>
+                <div style={{ fontSize: '13px', fontWeight: 700, color: 'var(--text-main)' }}>
+                  {t('common.phoneCalendar')}
+                </div>
+                <div style={{ fontSize: '11px', color: 'var(--text-muted)' }}>
+                  {t('common.phoneCalendarDesc')}
+                </div>
+              </div>
+            </button>
+          </div>
+        </>
+      )}
+    </div>
+  );
+};
 
 export const AssessmentsView: React.FC = () => {
   const {
@@ -510,16 +695,34 @@ export const AssessmentsView: React.FC = () => {
 
                     {/* Footer Actions */}
                     <div className="course-meta-footer">
-                      <span style={{ fontSize: '13.5px', color: 'var(--text-muted)', fontWeight: 600 }}>
-                        {targetCourse?.name ? targetCourse.name.slice(0, 24) + (targetCourse.name.length > 24 ? '...' : '') : a.courseCode}
+                      <span
+                        style={{
+                          fontSize: '13px',
+                          color: 'var(--text-muted)',
+                          fontWeight: 600,
+                          overflow: 'hidden',
+                          textOverflow: 'ellipsis',
+                          whiteSpace: 'nowrap',
+                          maxWidth: '120px',
+                        }}
+                        title={targetCourse?.name || a.courseCode}
+                      >
+                        {targetCourse?.name || a.courseCode}
                       </span>
 
-                      <div style={{ display: 'flex', alignItems: 'center', gap: '7px', flexWrap: 'wrap' }}>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                        <AssessmentCalendarMenu
+                          assessment={a}
+                          openGoogleCalendar={openGoogleCalendar}
+                          exportAssessmentIcs={exportAssessmentIcs}
+                          t={t}
+                        />
+
                         <button
                           type="button"
                           style={{
                             color: 'var(--text-muted)',
-                            padding: '8px 11px',
+                            padding: '7px 11px',
                             borderRadius: 'var(--radius-md)',
                             display: 'inline-flex',
                             alignItems: 'center',
@@ -528,53 +731,7 @@ export const AssessmentsView: React.FC = () => {
                             fontWeight: 600,
                             backgroundColor: 'var(--bg-subtle)',
                             border: '1px solid var(--border)',
-                            minHeight: '38px',
-                            cursor: 'pointer',
-                            transition: 'all 0.15s ease',
-                          }}
-                          onClick={() => openGoogleCalendar(a)}
-                          title={t('common.googleCalendar')}
-                        >
-                          <Calendar size={13} color="var(--accent)" />
-                          <span>{t('common.googleCalendar')}</span>
-                        </button>
-
-                        <button
-                          type="button"
-                          style={{
-                            color: 'var(--text-muted)',
-                            padding: '8px 10px',
-                            borderRadius: 'var(--radius-md)',
-                            display: 'inline-flex',
-                            alignItems: 'center',
-                            gap: '4px',
-                            fontSize: '12px',
-                            fontWeight: 600,
-                            backgroundColor: 'var(--bg-subtle)',
-                            border: '1px solid var(--border)',
-                            minHeight: '38px',
-                            cursor: 'pointer',
-                            transition: 'all 0.15s ease',
-                          }}
-                          onClick={() => exportAssessmentIcs(a)}
-                          title={t('common.downloadIcs')}
-                        >
-                          <span>.ICS</span>
-                        </button>
-
-                        <button
-                          type="button"
-                          style={{
-                            color: 'var(--text-muted)',
-                            padding: '8px 11px',
-                            borderRadius: 'var(--radius-md)',
-                            display: 'inline-flex',
-                            alignItems: 'center',
-                            gap: '4px',
-                            fontSize: '13px',
-                            fontWeight: 600,
-                            backgroundColor: 'var(--bg-subtle)',
-                            minHeight: '38px',
+                            minHeight: '34px',
                             cursor: 'pointer',
                             transition: 'all 0.15s ease',
                           }}
@@ -582,7 +739,7 @@ export const AssessmentsView: React.FC = () => {
                           title={`${t('common.edit')} ${a.title}`}
                           aria-label={`${t('common.edit')} ${a.title}`}
                         >
-                          <Edit3 size={14} />
+                          <Edit3 size={13} />
                           <span>{t('common.edit')}</span>
                         </button>
 
@@ -590,16 +747,16 @@ export const AssessmentsView: React.FC = () => {
                           type="button"
                           style={{
                             color: 'var(--danger)',
-                            padding: '8px 11px',
+                            padding: '7px 11px',
                             borderRadius: 'var(--radius-md)',
                             display: 'inline-flex',
                             alignItems: 'center',
                             gap: '4px',
-                            fontSize: '13px',
+                            fontSize: '12.5px',
                             fontWeight: 600,
                             backgroundColor: 'var(--danger-bg)',
                             border: '1px solid var(--danger-border)',
-                            minHeight: '38px',
+                            minHeight: '34px',
                             cursor: 'pointer',
                             transition: 'all 0.15s ease',
                           }}
@@ -607,7 +764,7 @@ export const AssessmentsView: React.FC = () => {
                           title={`${t('common.delete')} ${a.title}`}
                           aria-label={`${t('common.delete')} ${a.title}`}
                         >
-                          <Trash2 size={14} />
+                          <Trash2 size={13} />
                           <span>{t('common.delete')}</span>
                         </button>
                       </div>
