@@ -98,6 +98,7 @@ export interface StudentSettings {
   currentTerm: string;
   targetGpa: number;
   language?: Language;
+  notificationsEnabled?: boolean;
   gpaConfig?: GpaGradingConfig;
 }
 

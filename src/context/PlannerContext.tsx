@@ -22,6 +22,18 @@ import {
 } from '../utils/storage';
 import { exportBackupFile, getLastExportTime } from '../utils/backupRestore';
 import { translate } from '../locales';
+import {
+  getNotificationPermission,
+  requestNotificationPermission,
+  sendTestNotification as sendTestNotificationUtil,
+  checkAndTriggerDueNotifications,
+} from '../utils/notificationUtils';
+import {
+  generateAssessmentIcs,
+  generateSemesterScheduleIcs,
+  downloadIcsFile,
+  getGoogleCalendarUrl,
+} from '../utils/calendarUtils';
 
 export const PlannerProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [activeSection, setActiveSection] = useState<NavSection>('dashboard');
@@ -364,6 +376,62 @@ export const PlannerProvider: React.FC<{ children: React.ReactNode }> = ({ child
     }
   };
 
+  // Notification state
+  const [notificationPermission, setNotificationPermission] = useState<NotificationPermission>(() =>
+    getNotificationPermission()
+  );
+
+  const requestNotificationPermissionHandler = useCallback(async (): Promise<boolean> => {
+    const result = await requestNotificationPermission();
+    setNotificationPermission(result);
+    if (result === 'granted') {
+      setSettings((prev) => ({ ...prev, notificationsEnabled: true }));
+      safeSetItem(STORAGE_KEYS.NOTIFICATIONS_ENABLED, true);
+      return true;
+    } else {
+      setSettings((prev) => ({ ...prev, notificationsEnabled: false }));
+      safeSetItem(STORAGE_KEYS.NOTIFICATIONS_ENABLED, false);
+      return false;
+    }
+  }, []);
+
+  const sendTestNotificationHandler = useCallback(async (): Promise<boolean> => {
+    return await sendTestNotificationUtil(language);
+  }, [language]);
+
+  // Periodic and on-change notification check
+  useEffect(() => {
+    if (settings.notificationsEnabled && notificationPermission === 'granted') {
+      checkAndTriggerDueNotifications(assessments, language);
+    }
+  }, [assessments, settings.notificationsEnabled, notificationPermission, language]);
+
+  // Calendar sync functions
+  const exportSemesterScheduleIcs = useCallback(() => {
+    const ics = generateSemesterScheduleIcs(assessments, courses, settings.currentTerm);
+    downloadIcsFile(`uniplanner_${settings.currentTerm.replace(/\s+/g, '_')}_schedule.ics`, ics);
+  }, [assessments, courses, settings.currentTerm]);
+
+  const exportAssessmentIcs = useCallback(
+    (assessment: Assessment) => {
+      const course = courses.find((c) => c.id === assessment.courseId);
+      const ics = generateAssessmentIcs(assessment, course);
+      downloadIcsFile(`${assessment.courseCode}_${assessment.title.replace(/\s+/g, '_')}.ics`, ics);
+    },
+    [courses]
+  );
+
+  const openGoogleCalendar = useCallback(
+    (assessment: Assessment) => {
+      const course = courses.find((c) => c.id === assessment.courseId);
+      const url = getGoogleCalendarUrl(assessment, course);
+      if (url) {
+        window.open(url, '_blank', 'noopener,noreferrer');
+      }
+    },
+    [courses]
+  );
+
   return (
     <PlannerContext.Provider
       value={{
@@ -435,6 +503,14 @@ export const PlannerProvider: React.FC<{ children: React.ReactNode }> = ({ child
         isInstallModalOpen,
         openInstallModal,
         closeInstallModal,
+
+        // Notification & Calendar Sync
+        notificationPermission,
+        requestNotificationPermission: requestNotificationPermissionHandler,
+        sendTestNotification: sendTestNotificationHandler,
+        exportSemesterScheduleIcs,
+        exportAssessmentIcs,
+        openGoogleCalendar,
       }}
     >
       {children}

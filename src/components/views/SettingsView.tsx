@@ -16,6 +16,9 @@ import {
   WifiOff,
   RefreshCw,
   Globe,
+  Bell,
+  BellRing,
+  Calendar,
 } from 'lucide-react';
 import { usePlanner } from '../../context/usePlanner';
 import { usePwa } from '../../hooks/usePwa';
@@ -60,7 +63,13 @@ export const SettingsView: React.FC = () => {
     language,
     setLanguage,
     t,
+    notificationPermission,
+    requestNotificationPermission,
+    sendTestNotification,
+    exportSemesterScheduleIcs,
   } = usePlanner();
+
+  const [notificationNotice, setNotificationNotice] = useState<string | null>(null);
 
   const {
     isOnline,
@@ -451,6 +460,192 @@ export const SettingsView: React.FC = () => {
                 </p>
               </div>
             </button>
+          </div>
+        </div>
+
+        {/* Notifications & Calendar Card */}
+        <div className="settings-group">
+          <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '8px' }}>
+            <div
+              style={{
+                width: '40px',
+                height: '40px',
+                borderRadius: 'var(--radius-md)',
+                backgroundColor: 'rgba(234, 88, 12, 0.1)',
+                color: '#ea580c',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                flexShrink: 0,
+              }}
+            >
+              <BellRing size={20} />
+            </div>
+            <div>
+              <h3 style={{ fontSize: '18px', fontWeight: 700, margin: 0, color: 'var(--text-main)' }}>
+                {t('settings.notificationSection')}
+              </h3>
+              <p style={{ fontSize: '13.5px', color: 'var(--text-muted)', margin: 0 }}>
+                {t('settings.notificationSubtitle')}
+              </p>
+            </div>
+          </div>
+
+          <div
+            style={{
+              display: 'grid',
+              gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))',
+              gap: '16px',
+              marginTop: '16px',
+            }}
+          >
+            {/* Browser Push Notifications Box */}
+            <div
+              style={{
+                padding: '18px',
+                borderRadius: 'var(--radius-lg)',
+                border: '1px solid var(--border)',
+                backgroundColor: 'var(--bg-surface)',
+                display: 'flex',
+                flexDirection: 'column',
+                justifyContent: 'space-between',
+                gap: '14px',
+              }}
+            >
+              <div>
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '8px' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                    <Bell size={18} color="var(--primary)" />
+                    <span style={{ fontSize: '15px', fontWeight: 700, color: 'var(--text-main)' }}>
+                      {t('settings.browserNotificationsTitle')}
+                    </span>
+                  </div>
+                  <span
+                    style={{
+                      fontSize: '11px',
+                      fontWeight: 800,
+                      padding: '2px 8px',
+                      borderRadius: 'var(--radius-full)',
+                      backgroundColor:
+                        notificationPermission === 'granted'
+                          ? '#ecfdf5'
+                          : notificationPermission === 'denied'
+                          ? '#fef2f2'
+                          : '#fffbeb',
+                      color:
+                        notificationPermission === 'granted'
+                          ? '#059669'
+                          : notificationPermission === 'denied'
+                          ? '#dc2626'
+                          : '#d97706',
+                      border: `1px solid ${
+                        notificationPermission === 'granted'
+                          ? '#a7f3d0'
+                          : notificationPermission === 'denied'
+                          ? '#fecaca'
+                          : '#fde68a'
+                      }`,
+                    }}
+                  >
+                    {notificationPermission === 'granted'
+                      ? t('settings.notificationsActive')
+                      : notificationPermission === 'denied'
+                      ? t('settings.notificationsBlocked')
+                      : t('settings.notificationsDefault')}
+                  </span>
+                </div>
+                <p style={{ fontSize: '13px', color: 'var(--text-muted)', margin: 0, lineHeight: 1.45 }}>
+                  {t('settings.browserNotificationsDesc')}
+                </p>
+              </div>
+
+              <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap' }}>
+                {notificationPermission !== 'granted' ? (
+                  <button
+                    type="button"
+                    className="btn-primary"
+                    style={{ padding: '8px 14px', fontSize: '13px' }}
+                    onClick={async () => {
+                      const granted = await requestNotificationPermission();
+                      if (granted) {
+                        setNotificationNotice(t('settings.notificationsActive'));
+                        setTimeout(() => setNotificationNotice(null), 3500);
+                      }
+                    }}
+                  >
+                    <Bell size={14} />
+                    <span>{t('settings.enableNotifications')}</span>
+                  </button>
+                ) : (
+                  <button
+                    type="button"
+                    className="btn-secondary"
+                    style={{ padding: '8px 14px', fontSize: '13px' }}
+                    onClick={async () => {
+                      await sendTestNotification();
+                      setNotificationNotice(t('settings.testNotificationSuccess'));
+                      setTimeout(() => setNotificationNotice(null), 3500);
+                    }}
+                  >
+                    <BellRing size={14} />
+                    <span>{t('settings.testNotificationBtn')}</span>
+                  </button>
+                )}
+                {notificationNotice && (
+                  <span style={{ fontSize: '12.5px', color: 'var(--success)', fontWeight: 600 }}>
+                    {notificationNotice}
+                  </span>
+                )}
+              </div>
+            </div>
+
+            {/* 1-Click Calendar Sync Box */}
+            <div
+              style={{
+                padding: '18px',
+                borderRadius: 'var(--radius-lg)',
+                border: '1px solid var(--border)',
+                backgroundColor: 'var(--bg-surface)',
+                display: 'flex',
+                flexDirection: 'column',
+                justifyContent: 'space-between',
+                gap: '14px',
+              }}
+            >
+              <div>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '8px' }}>
+                  <Calendar size={18} color="#ea580c" />
+                  <span style={{ fontSize: '15px', fontWeight: 700, color: 'var(--text-main)' }}>
+                    {t('settings.calendarSyncTitle')}
+                  </span>
+                </div>
+                <p style={{ fontSize: '13px', color: 'var(--text-muted)', margin: 0, lineHeight: 1.45 }}>
+                  {t('settings.calendarSyncDesc')}
+                </p>
+              </div>
+
+              <div>
+                <button
+                  type="button"
+                  className="btn-secondary"
+                  style={{
+                    padding: '8px 14px',
+                    fontSize: '13px',
+                    fontWeight: 700,
+                    color: 'var(--text-main)',
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    gap: '6px',
+                  }}
+                  onClick={() => {
+                    exportSemesterScheduleIcs();
+                  }}
+                >
+                  <Download size={14} />
+                  <span>{t('settings.exportSemesterCalendarBtn')}</span>
+                </button>
+              </div>
+            </div>
           </div>
         </div>
 

@@ -87,6 +87,14 @@ export interface PlannerContextType {
   isInstallModalOpen: boolean;
   openInstallModal: () => void;
   closeInstallModal: () => void;
+
+  // Notification & Calendar Sync
+  notificationPermission: NotificationPermission;
+  requestNotificationPermission: () => Promise<boolean>;
+  sendTestNotification: () => Promise<boolean>;
+  exportSemesterScheduleIcs: () => void;
+  exportAssessmentIcs: (assessment: Assessment) => void;
+  openGoogleCalendar: (assessment: Assessment) => void;
 }
 
 export const PlannerContext = createContext<PlannerContextType | undefined>(undefined);

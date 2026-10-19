@@ -38,6 +38,9 @@ export const AssessmentsView: React.FC = () => {
     openDeleteAssessmentModal,
     language,
     t,
+    exportSemesterScheduleIcs,
+    exportAssessmentIcs,
+    openGoogleCalendar,
   } = usePlanner();
 
   // Filter and Sort states
@@ -89,16 +92,38 @@ export const AssessmentsView: React.FC = () => {
           <p>{t('assessments.subtitle')}</p>
         </div>
 
-        {courses.length > 0 && (
-          <button
-            type="button"
-            className="btn-primary"
-            onClick={() => openAddAssessmentModal()}
-          >
-            <Plus size={16} strokeWidth={2.5} />
-            <span>{t('assessments.addAssessment')}</span>
-          </button>
-        )}
+        <div style={{ display: 'flex', alignItems: 'center', gap: '10px', flexWrap: 'wrap' }}>
+          {assessments.length > 0 && (
+            <button
+              type="button"
+              className="btn-secondary"
+              onClick={() => exportSemesterScheduleIcs()}
+              style={{
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: '6px',
+                padding: '8px 14px',
+                fontSize: '13.5px',
+                fontWeight: 600,
+              }}
+              title={t('settings.exportSemesterCalendarBtn')}
+            >
+              <Calendar size={15} color="var(--accent)" />
+              <span>{t('common.syncSchedule')} (.ics)</span>
+            </button>
+          )}
+
+          {courses.length > 0 && (
+            <button
+              type="button"
+              className="btn-primary"
+              onClick={() => openAddAssessmentModal()}
+            >
+              <Plus size={16} strokeWidth={2.5} />
+              <span>{t('assessments.addAssessment')}</span>
+            </button>
+          )}
+        </div>
       </div>
 
       {courses.length === 0 ? (
@@ -489,20 +514,67 @@ export const AssessmentsView: React.FC = () => {
                         {targetCourse?.name ? targetCourse.name.slice(0, 24) + (targetCourse.name.length > 24 ? '...' : '') : a.courseCode}
                       </span>
 
-                      <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '7px', flexWrap: 'wrap' }}>
                         <button
                           type="button"
                           style={{
                             color: 'var(--text-muted)',
-                            padding: '9px 14px',
+                            padding: '8px 11px',
                             borderRadius: 'var(--radius-md)',
                             display: 'inline-flex',
                             alignItems: 'center',
-                            gap: '5px',
-                            fontSize: '13.5px',
+                            gap: '4px',
+                            fontSize: '12.5px',
                             fontWeight: 600,
                             backgroundColor: 'var(--bg-subtle)',
-                            minHeight: '42px',
+                            border: '1px solid var(--border)',
+                            minHeight: '38px',
+                            cursor: 'pointer',
+                            transition: 'all 0.15s ease',
+                          }}
+                          onClick={() => openGoogleCalendar(a)}
+                          title={t('common.googleCalendar')}
+                        >
+                          <Calendar size={13} color="var(--accent)" />
+                          <span>{t('common.googleCalendar')}</span>
+                        </button>
+
+                        <button
+                          type="button"
+                          style={{
+                            color: 'var(--text-muted)',
+                            padding: '8px 10px',
+                            borderRadius: 'var(--radius-md)',
+                            display: 'inline-flex',
+                            alignItems: 'center',
+                            gap: '4px',
+                            fontSize: '12px',
+                            fontWeight: 600,
+                            backgroundColor: 'var(--bg-subtle)',
+                            border: '1px solid var(--border)',
+                            minHeight: '38px',
+                            cursor: 'pointer',
+                            transition: 'all 0.15s ease',
+                          }}
+                          onClick={() => exportAssessmentIcs(a)}
+                          title={t('common.downloadIcs')}
+                        >
+                          <span>.ICS</span>
+                        </button>
+
+                        <button
+                          type="button"
+                          style={{
+                            color: 'var(--text-muted)',
+                            padding: '8px 11px',
+                            borderRadius: 'var(--radius-md)',
+                            display: 'inline-flex',
+                            alignItems: 'center',
+                            gap: '4px',
+                            fontSize: '13px',
+                            fontWeight: 600,
+                            backgroundColor: 'var(--bg-subtle)',
+                            minHeight: '38px',
                             cursor: 'pointer',
                             transition: 'all 0.15s ease',
                           }}
@@ -510,7 +582,7 @@ export const AssessmentsView: React.FC = () => {
                           title={`${t('common.edit')} ${a.title}`}
                           aria-label={`${t('common.edit')} ${a.title}`}
                         >
-                          <Edit3 size={15} />
+                          <Edit3 size={14} />
                           <span>{t('common.edit')}</span>
                         </button>
 
@@ -518,16 +590,16 @@ export const AssessmentsView: React.FC = () => {
                           type="button"
                           style={{
                             color: 'var(--danger)',
-                            padding: '9px 14px',
+                            padding: '8px 11px',
                             borderRadius: 'var(--radius-md)',
                             display: 'inline-flex',
                             alignItems: 'center',
-                            gap: '5px',
-                            fontSize: '13.5px',
+                            gap: '4px',
+                            fontSize: '13px',
                             fontWeight: 600,
                             backgroundColor: 'var(--danger-bg)',
                             border: '1px solid var(--danger-border)',
-                            minHeight: '42px',
+                            minHeight: '38px',
                             cursor: 'pointer',
                             transition: 'all 0.15s ease',
                           }}
@@ -535,7 +607,7 @@ export const AssessmentsView: React.FC = () => {
                           title={`${t('common.delete')} ${a.title}`}
                           aria-label={`${t('common.delete')} ${a.title}`}
                         >
-                          <Trash2 size={15} />
+                          <Trash2 size={14} />
                           <span>{t('common.delete')}</span>
                         </button>
                       </div>

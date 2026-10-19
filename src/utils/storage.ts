@@ -19,6 +19,7 @@ export const STORAGE_KEYS = {
   SETTINGS: 'uniplanner_settings_v1',
   LAST_BACKUP_EXPORT: 'uniplanner_last_backup_export_v1',
   LANGUAGE: 'uniplanner_language_v1',
+  NOTIFICATIONS_ENABLED: 'uniplanner_notifications_enabled_v1',
 };
 
 export const DEFAULT_SETTINGS: StudentSettings = {
@@ -29,6 +30,7 @@ export const DEFAULT_SETTINGS: StudentSettings = {
   currentTerm: 'Fall 2026',
   targetGpa: 3.75,
   language: 'en',
+  notificationsEnabled: false,
   gpaConfig: getDefaultGpaConfig('4.0_ugc'),
 };
 
@@ -348,6 +350,9 @@ export function loadSettings(): StudentSettings {
       ? parsed.targetGpa
       : DEFAULT_SETTINGS.targetGpa,
     language: parsed.language === 'bn' || safeGetItem<Language>(STORAGE_KEYS.LANGUAGE, 'en') === 'bn' ? 'bn' : 'en',
+    notificationsEnabled: typeof parsed.notificationsEnabled === 'boolean'
+      ? parsed.notificationsEnabled
+      : safeGetItem<boolean>(STORAGE_KEYS.NOTIFICATIONS_ENABLED, false),
     gpaConfig,
   };
 }

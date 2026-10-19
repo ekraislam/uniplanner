@@ -11,6 +11,7 @@ import {
   AlertTriangle,
   ShieldCheck,
   Clock,
+  Calendar,
 } from 'lucide-react';
 import { usePlanner } from '../../context/usePlanner';
 import { StatCard } from '../common/StatCard';
@@ -38,6 +39,8 @@ export const DashboardView: React.FC = () => {
     setActiveSection,
     language,
     t,
+    exportSemesterScheduleIcs,
+    openGoogleCalendar,
   } = usePlanner();
 
   const totalCredits = courses.reduce((sum, c) => sum + c.credits, 0);
@@ -73,6 +76,17 @@ export const DashboardView: React.FC = () => {
     return urgency.daysDiff !== null && urgency.daysDiff >= 0 && urgency.daysDiff <= 7;
   }).length;
 
+  // Urgent deadlines detection (Today & Tomorrow)
+  const urgentToday = allUpcomingDeadlines.filter((a) => {
+    const urgency = getAssessmentUrgency(a.dueDate, undefined, language);
+    return urgency.level === 'today';
+  });
+
+  const urgentTomorrow = allUpcomingDeadlines.filter((a) => {
+    const urgency = getAssessmentUrgency(a.dueDate, undefined, language);
+    return urgency.level === 'tomorrow';
+  });
+
   // GPA calculations
   const gpaConfig = settings.gpaConfig || getDefaultGpaConfig(settings.gradingScale);
   const cumulativeGpa = calculateCumulativeGpa(courses, gpaConfig);
@@ -85,6 +99,143 @@ export const DashboardView: React.FC = () => {
 
   return (
     <div>
+      {/* Urgent Deadline Alert Banner (Today or Tomorrow) */}
+      {urgentToday.length > 0 ? (
+        <section
+          style={{
+            marginBottom: '20px',
+            padding: '16px 20px',
+            borderRadius: 'var(--radius-lg)',
+            backgroundColor: '#fef2f2',
+            border: '1px solid #fecaca',
+            boxShadow: '0 4px 12px rgba(239, 68, 68, 0.08)',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+            gap: '16px',
+            flexWrap: 'wrap',
+          }}
+          aria-live="polite"
+        >
+          <div style={{ display: 'flex', alignItems: 'center', gap: '14px' }}>
+            <div
+              style={{
+                width: '42px',
+                height: '42px',
+                borderRadius: '50%',
+                backgroundColor: '#fee2e2',
+                color: '#dc2626',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                flexShrink: 0,
+              }}
+            >
+              <Flame size={24} />
+            </div>
+            <div>
+              <div style={{ fontSize: '15px', fontWeight: 800, color: '#991b1b' }}>
+                {t('common.urgentBannerToday', { count: urgentToday.length })}
+              </div>
+              <div style={{ fontSize: '13px', color: '#b91c1c', marginTop: '2px' }}>
+                {urgentToday.map((a) => `${a.courseCode}: ${a.title}`).slice(0, 3).join(' • ')}
+                {urgentToday.length > 3 ? ` (+${urgentToday.length - 3} more)` : ''}
+              </div>
+            </div>
+          </div>
+
+          <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+            <button
+              type="button"
+              onClick={() => setActiveSection('assessments')}
+              style={{
+                padding: '8px 16px',
+                backgroundColor: '#dc2626',
+                color: '#ffffff',
+                fontWeight: 700,
+                fontSize: '13px',
+                borderRadius: 'var(--radius-md)',
+                border: 'none',
+                cursor: 'pointer',
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: '6px',
+              }}
+            >
+              <span>{t('common.viewDeadlines')}</span>
+              <ArrowRight size={14} />
+            </button>
+          </div>
+        </section>
+      ) : urgentTomorrow.length > 0 ? (
+        <section
+          style={{
+            marginBottom: '20px',
+            padding: '16px 20px',
+            borderRadius: 'var(--radius-lg)',
+            backgroundColor: '#fffbeb',
+            border: '1px solid #fde68a',
+            boxShadow: '0 4px 12px rgba(245, 158, 11, 0.08)',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+            gap: '16px',
+            flexWrap: 'wrap',
+          }}
+          aria-live="polite"
+        >
+          <div style={{ display: 'flex', alignItems: 'center', gap: '14px' }}>
+            <div
+              style={{
+                width: '42px',
+                height: '42px',
+                borderRadius: '50%',
+                backgroundColor: '#fef3c7',
+                color: '#d97706',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                flexShrink: 0,
+              }}
+            >
+              <AlertTriangle size={22} />
+            </div>
+            <div>
+              <div style={{ fontSize: '15px', fontWeight: 800, color: '#92400e' }}>
+                {t('common.urgentBannerTomorrow', { count: urgentTomorrow.length })}
+              </div>
+              <div style={{ fontSize: '13px', color: '#b45309', marginTop: '2px' }}>
+                {urgentTomorrow.map((a) => `${a.courseCode}: ${a.title}`).slice(0, 3).join(' • ')}
+                {urgentTomorrow.length > 3 ? ` (+${urgentTomorrow.length - 3} more)` : ''}
+              </div>
+            </div>
+          </div>
+
+          <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+            <button
+              type="button"
+              onClick={() => setActiveSection('assessments')}
+              style={{
+                padding: '8px 16px',
+                backgroundColor: '#d97706',
+                color: '#ffffff',
+                fontWeight: 700,
+                fontSize: '13px',
+                borderRadius: 'var(--radius-md)',
+                border: 'none',
+                cursor: 'pointer',
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: '6px',
+              }}
+            >
+              <span>{t('common.viewDeadlines')}</span>
+              <ArrowRight size={14} />
+            </button>
+          </div>
+        </section>
+      ) : null}
+
       {/* Top Welcome Banner */}
       <section className="welcome-banner">
         <div className="welcome-tag">
@@ -393,6 +544,19 @@ export const DashboardView: React.FC = () => {
                   </div>
                 )}
 
+                {allUpcomingDeadlines.length > 0 && (
+                  <button
+                    type="button"
+                    className="btn-secondary"
+                    style={{ padding: '6px 12px', fontSize: '12.5px', display: 'inline-flex', alignItems: 'center', gap: '5px' }}
+                    onClick={() => exportSemesterScheduleIcs()}
+                    title={t('settings.exportSemesterCalendarBtn')}
+                  >
+                    <Calendar size={13} color="var(--accent)" />
+                    <span>{t('common.syncSchedule')}</span>
+                  </button>
+                )}
+
                 <button
                   type="button"
                   className="btn-secondary"
@@ -555,8 +719,34 @@ export const DashboardView: React.FC = () => {
                           </span>
                         )}
                       </div>
-                      <div style={{ fontSize: '12.5px', color: 'var(--text-muted)', marginTop: '2px' }}>
-                        {t('common.maxMarks')}: {a.maxMarks} {t('common.points')}
+                      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-end', gap: '8px', marginTop: '3px' }}>
+                        <span style={{ fontSize: '12px', color: 'var(--text-muted)' }}>
+                          {t('common.maxMarks')}: {a.maxMarks} {t('common.points')}
+                        </span>
+                        <button
+                          type="button"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            openGoogleCalendar(a);
+                          }}
+                          title={t('common.googleCalendar')}
+                          style={{
+                            background: 'none',
+                            border: '1px solid var(--border)',
+                            borderRadius: 'var(--radius-sm)',
+                            padding: '2px 6px',
+                            fontSize: '11px',
+                            fontWeight: 600,
+                            color: 'var(--text-muted)',
+                            cursor: 'pointer',
+                            display: 'inline-flex',
+                            alignItems: 'center',
+                            gap: '3px',
+                          }}
+                        >
+                          <Calendar size={11} color="var(--accent)" />
+                          <span>{t('common.googleCalendar')}</span>
+                        </button>
                       </div>
                     </div>
                   </div>
