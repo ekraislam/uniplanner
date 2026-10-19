@@ -10,6 +10,7 @@ import {
   Smartphone,
   Download,
   Check,
+  Globe,
 } from 'lucide-react';
 import { usePlanner } from '../../context/usePlanner';
 import { usePwa } from '../../hooks/usePwa';
@@ -22,16 +23,6 @@ interface NavItemConfig {
   showCount?: boolean;
 }
 
-const NAV_ITEMS: NavItemConfig[] = [
-  { id: 'dashboard', label: 'Dashboard', icon: LayoutDashboard },
-  { id: 'courses', label: 'Courses', icon: BookOpen, showCount: true },
-  { id: 'assessments', label: 'Exams & Tasks', icon: CalendarCheck, showCount: true },
-  { id: 'results', label: 'Grade Analytics', icon: TrendingUp },
-  { id: 'gpa-calculator', label: 'GPA Calculator', icon: Calculator },
-  { id: 'settings', label: 'Settings', icon: Settings },
-];
-
-
 export const Sidebar: React.FC = () => {
   const {
     activeSection,
@@ -42,8 +33,20 @@ export const Sidebar: React.FC = () => {
     isSidebarOpen,
     closeSidebar,
     openInstallModal,
+    language,
+    setLanguage,
+    t,
   } = usePlanner();
   const { isInstalled, isInstallable, promptInstall } = usePwa();
+
+  const navItems: NavItemConfig[] = [
+    { id: 'dashboard', label: t('nav.dashboard'), icon: LayoutDashboard },
+    { id: 'courses', label: t('nav.courses'), icon: BookOpen, showCount: true },
+    { id: 'assessments', label: t('nav.assessments'), icon: CalendarCheck, showCount: true },
+    { id: 'results', label: t('nav.results'), icon: TrendingUp },
+    { id: 'gpa-calculator', label: t('nav.gpaCalculator'), icon: Calculator },
+    { id: 'settings', label: t('nav.settings'), icon: Settings },
+  ];
 
   const handleNavClick = (section: NavSection) => {
     setActiveSection(section);
@@ -98,7 +101,7 @@ export const Sidebar: React.FC = () => {
         </div>
 
         <nav className="sidebar-nav">
-          {NAV_ITEMS.map((item) => {
+          {navItems.map((item) => {
             const Icon = item.icon;
             const isActive = activeSection === item.id;
             let countBadge: number | null = null;
@@ -131,6 +134,20 @@ export const Sidebar: React.FC = () => {
         </nav>
 
         <div className="sidebar-footer">
+          {/* Quick Language Toggle in Sidebar */}
+          <div style={{ marginBottom: '10px' }}>
+            <button
+              type="button"
+              className="lang-toggle-btn"
+              onClick={() => setLanguage(language === 'en' ? 'bn' : 'en')}
+              style={{ width: '100%', justifyContent: 'center' }}
+              title={language === 'en' ? 'বাংলা মোড চালু করুন' : 'Switch to English'}
+            >
+              <Globe size={14} color="var(--accent)" />
+              <span>{language === 'en' ? 'বাংলা মোড' : 'English Mode'}</span>
+            </button>
+          </div>
+
           {!isInstalled ? (
             <div className="sidebar-install-banner">
               <button
@@ -142,7 +159,7 @@ export const Sidebar: React.FC = () => {
                 <div className="sidebar-install-left">
                   <Smartphone size={16} className="sidebar-install-icon" />
                   <div className="sidebar-install-labels">
-                    <span className="install-label-main">Install App</span>
+                    <span className="install-label-main">{t('nav.installApp')}</span>
                     <span className="install-label-sub">Offline • 0 MB</span>
                   </div>
                 </div>

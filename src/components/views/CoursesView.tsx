@@ -12,6 +12,8 @@ export const CoursesView: React.FC = () => {
     openDeleteCourseModal,
     openAddAssessmentModal,
     openConfirmFinalGradeModal,
+    language,
+    t,
   } = usePlanner();
 
   return (
@@ -19,7 +21,7 @@ export const CoursesView: React.FC = () => {
       <div className="view-header">
         <div className="view-title-group">
           <h2>
-            Courses
+            {language === 'bn' ? 'কোর্সসমূহ' : 'Courses'}
             {courses.length > 0 && (
               <span
                 style={{
@@ -29,11 +31,15 @@ export const CoursesView: React.FC = () => {
                   marginLeft: '10px',
                 }}
               >
-                ({courses.length} enrolled)
+                {language === 'bn' ? `(${courses.length}টি যুক্ত)` : `(${courses.length} enrolled)`}
               </span>
             )}
           </h2>
-          <p>Manage your enrolled subjects, credits, and target grades</p>
+          <p>
+            {language === 'bn'
+              ? 'আপনার বিষয়, ক্রেডিট এবং গ্রেড পরিচালনা করুন'
+              : 'Manage your enrolled subjects, credits, and target grades'}
+          </p>
         </div>
         <button
           type="button"
@@ -41,16 +47,20 @@ export const CoursesView: React.FC = () => {
           onClick={() => openAddCourseModal()}
         >
           <Plus size={16} strokeWidth={2.5} />
-          <span>Add Course</span>
+          <span>{t('dashboard.addCourse')}</span>
         </button>
       </div>
 
       {courses.length === 0 ? (
         <EmptyState
           icon={<BookOpen size={32} />}
-          title="No courses added yet"
-          description="Add your courses to track assignments, exams, and calculate your GPA automatically."
-          actionText="Add Your First Course"
+          title={language === 'bn' ? 'এখনো কোনো কোর্স যুক্ত করা হয়নি' : 'No courses added yet'}
+          description={
+            language === 'bn'
+              ? 'অ্যাসাইনমেন্ট ও পরীক্ষা ট্র্যাক করতে এবং সিজিপিএ হিসাব করতে আপনার বিষয়গুলো যোগ করুন।'
+              : 'Add your courses to track assignments, exams, and calculate your GPA automatically.'
+          }
+          actionText={t('dashboard.addFirstCourse')}
           onAction={() => openAddCourseModal()}
         />
 
@@ -88,7 +98,7 @@ export const CoursesView: React.FC = () => {
                       {course.code}
                     </span>
                     <span className="course-credits-badge" style={{ fontSize: '14.5px', fontWeight: 700 }}>
-                      {course.credits} Credits
+                      {course.credits} {t('common.credits')}
                     </span>
                   </div>
                   <h3 className="course-name" style={{ fontSize: '20px', fontWeight: 800, margin: '8px 0 14px' }}>
@@ -106,7 +116,7 @@ export const CoursesView: React.FC = () => {
                     }}
                   >
                     <Calendar size={16} color="var(--accent)" />
-                    <span>Term: <strong>{course.semester}</strong></span>
+                    <span>{t('settings.term')}: <strong>{course.semester}</strong></span>
                   </div>
 
                   {course.instructor && (
@@ -207,7 +217,7 @@ export const CoursesView: React.FC = () => {
                       aria-label={`Add assessment for ${course.code}`}
                     >
                       <Plus size={16} strokeWidth={2.5} />
-                      <span>Assessment</span>
+                      <span>{language === 'bn' ? 'অ্যাসেসমেন্ট' : 'Assessment'}</span>
                     </button>
 
                     <button
@@ -232,7 +242,7 @@ export const CoursesView: React.FC = () => {
                       aria-label={`Set final grade for ${course.code}`}
                     >
                       <Award size={16} />
-                      <span>{course.finalGrade ? `Grade ${course.finalGrade}` : 'Grade'}</span>
+                      <span>{course.finalGrade ? `${t('dashboard.gradePrefix')} ${course.finalGrade}` : t('dashboard.gradePrefix')}</span>
                     </button>
                   </div>
 
@@ -254,11 +264,11 @@ export const CoursesView: React.FC = () => {
                         transition: 'all 0.15s ease',
                       }}
                       onClick={() => openAddCourseModal(course)}
-                      title={`Edit ${course.code}`}
-                      aria-label={`Edit ${course.code}`}
+                      title={`${t('common.edit')} ${course.code}`}
+                      aria-label={`${t('common.edit')} ${course.code}`}
                     >
                       <Edit3 size={15} />
-                      <span>Edit</span>
+                      <span>{t('common.edit')}</span>
                     </button>
 
                     <button
@@ -279,11 +289,11 @@ export const CoursesView: React.FC = () => {
                         transition: 'all 0.15s ease',
                       }}
                       onClick={() => openDeleteCourseModal(course)}
-                      title={`Delete ${course.code}`}
-                      aria-label={`Delete ${course.code}`}
+                      title={`${t('common.delete')} ${course.code}`}
+                      aria-label={`${t('common.delete')} ${course.code}`}
                     >
                       <Trash2 size={15} />
-                      <span>Delete</span>
+                      <span>{t('common.delete')}</span>
                     </button>
                   </div>
                 </div>

@@ -7,6 +7,7 @@ import type {
   CourseGradingConfig,
   GpaGradingConfig,
   UniPlannerBackupData,
+  Language,
 } from '../types';
 
 export interface PlannerContextType {
@@ -18,6 +19,11 @@ export interface PlannerContextType {
   isSidebarOpen: boolean;
   toggleSidebar: () => void;
   closeSidebar: () => void;
+
+  // Internationalization / Localization
+  language: Language;
+  setLanguage: (lang: Language) => void;
+  t: (key: string, params?: Record<string, string | number>) => string;
 
   // Course Modal (Add / Edit)
   isAddCourseModalOpen: boolean;

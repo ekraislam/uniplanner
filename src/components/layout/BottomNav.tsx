@@ -18,15 +18,15 @@ interface BottomNavItem {
 }
 
 export const BottomNav: React.FC = () => {
-  const { activeSection, setActiveSection, courses, assessments } = usePlanner();
+  const { activeSection, setActiveSection, courses, assessments, t } = usePlanner();
 
   const items: BottomNavItem[] = [
-    { id: 'dashboard', label: 'Home', icon: LayoutDashboard },
-    { id: 'courses', label: 'Courses', icon: BookOpen, badge: courses.length > 0 ? courses.length : undefined },
-    { id: 'assessments', label: 'Tasks', icon: CalendarCheck, badge: assessments.length > 0 ? assessments.length : undefined },
-    { id: 'results', label: 'Results', icon: TrendingUp },
-    { id: 'gpa-calculator', label: 'GPA', icon: Calculator },
-    { id: 'settings', label: 'Settings', icon: Settings },
+    { id: 'dashboard', label: t('nav.home'), icon: LayoutDashboard },
+    { id: 'courses', label: t('nav.courses'), icon: BookOpen, badge: courses.length > 0 ? courses.length : undefined },
+    { id: 'assessments', label: t('nav.tasks'), icon: CalendarCheck, badge: assessments.length > 0 ? assessments.length : undefined },
+    { id: 'results', label: t('nav.resultsShort'), icon: TrendingUp },
+    { id: 'gpa-calculator', label: t('nav.gpaShort'), icon: Calculator },
+    { id: 'settings', label: t('nav.settings'), icon: Settings },
   ];
 
   const handleNav = (section: NavSection) => {

@@ -36,6 +36,8 @@ export const DashboardView: React.FC = () => {
     settings,
     openAddCourseModal,
     setActiveSection,
+    language,
+    t,
   } = usePlanner();
 
   const totalCredits = courses.reduce((sum, c) => sum + c.credits, 0);
@@ -56,7 +58,7 @@ export const DashboardView: React.FC = () => {
       return p === 'high';
     }
     if (deadlinesTab === 'week') {
-      const urgency = getAssessmentUrgency(a.dueDate);
+      const urgency = getAssessmentUrgency(a.dueDate, undefined, language);
       return urgency.daysDiff !== null && urgency.daysDiff >= 0 && urgency.daysDiff <= 7;
     }
     return true;
@@ -67,7 +69,7 @@ export const DashboardView: React.FC = () => {
   ).length;
 
   const thisWeekCount = allUpcomingDeadlines.filter((a) => {
-    const urgency = getAssessmentUrgency(a.dueDate);
+    const urgency = getAssessmentUrgency(a.dueDate, undefined, language);
     return urgency.daysDiff !== null && urgency.daysDiff >= 0 && urgency.daysDiff <= 7;
   }).length;
 
@@ -87,23 +89,25 @@ export const DashboardView: React.FC = () => {
       <section className="welcome-banner">
         <div className="welcome-tag">
           <Sparkles size={14} />
-          <span>{courses.length > 0 ? `${settings.currentTerm} Academic Term` : 'Academic Planner Ready'}</span>
+          <span>{courses.length > 0 ? `${settings.currentTerm} ${t('nav.academicTerm')}` : t('dashboard.plannerReady')}</span>
         </div>
         <h2 className="welcome-heading">
           {courses.length > 0
             ? settings.studentName
-              ? `Welcome back, ${settings.studentName}`
-              : 'Welcome to UniPlanner'
-            : 'Welcome to UniPlanner'}
+              ? t('dashboard.welcomeBack', { name: settings.studentName })
+              : t('dashboard.welcomeDefault')
+            : t('dashboard.welcomeDefault')}
         </h2>
         <p className="welcome-text">
           {courses.length > 0 ? (
-            <>
-              You have <strong>{courses.length} enrolled courses</strong> ({totalCredits} credits) and{' '}
-              <strong>{upcomingDeadlines.length} upcoming deadlines</strong> in {settings.currentTerm}. Keep up the great work!
-            </>
+            t('dashboard.summaryText', {
+              courseCount: courses.length,
+              credits: totalCredits,
+              deadlineCount: allUpcomingDeadlines.length,
+              term: settings.currentTerm,
+            })
           ) : (
-            'UniPlanner helps you organize your subjects, track quiz and exam deadlines, and calculate your GPA automatically.'
+            t('dashboard.emptyIntro')
           )}
         </p>
         <div style={{ display: 'flex', gap: '12px', flexWrap: 'wrap' }}>
@@ -113,7 +117,7 @@ export const DashboardView: React.FC = () => {
             onClick={() => openAddCourseModal()}
           >
             <Plus size={16} strokeWidth={2.5} />
-            <span>{courses.length > 0 ? 'Add Course' : 'Add Your First Course'}</span>
+            <span>{courses.length > 0 ? t('dashboard.addCourse') : t('dashboard.addFirstCourse')}</span>
           </button>
           {courses.length > 0 && (
             <button
@@ -122,7 +126,7 @@ export const DashboardView: React.FC = () => {
               onClick={() => setActiveSection('assessments')}
             >
               <CalendarCheck size={16} />
-              <span>View Deadlines</span>
+              <span>{t('dashboard.viewAssessments')}</span>
             </button>
           )}
         </div>
@@ -131,11 +135,11 @@ export const DashboardView: React.FC = () => {
       {/* Top Level Metric Cards (4 Balanced Spacious Cards) */}
       <div className="stat-grid">
         <StatCard
-          label="Overall CGPA"
+          label={t('dashboard.cumulativeGpa')}
           value={cumulativeGpa.gpaFormatted}
           subtext={
             cumulativeGpa.confirmedCredits > 0
-              ? `${cumulativeGpa.confirmedCredits} credits completed (${cumulativeGpa.confirmedCourses} courses)`
+              ? `${cumulativeGpa.confirmedCredits} ${t('common.credits')} (${cumulativeGpa.confirmedCourses} ${t('nav.courses')})`
               : 'No confirmed grades yet'
           }
           icon={<Award size={24} />}
@@ -143,13 +147,13 @@ export const DashboardView: React.FC = () => {
           iconColor="#2563eb"
         />
         <StatCard
-          label={`Term GPA (${settings.currentTerm})`}
+          label={`${t('dashboard.estimatedTermGpa')} (${settings.currentTerm})`}
           value={semesterGpa.gpaFormatted}
           subtext={
             semesterGpa.includedCredits > 0
-              ? `${semesterGpa.includedCredits} / ${semesterGpa.totalCredits} credits confirmed`
+              ? `${semesterGpa.includedCredits} / ${semesterGpa.totalCredits} ${t('common.credits')}`
               : semesterGpa.totalCourses > 0
-              ? `${semesterGpa.pendingCourses} courses in progress`
+              ? `${semesterGpa.pendingCourses} ${t('common.pending')}`
               : 'No courses registered'
           }
           icon={<TrendingUp size={24} />}
@@ -157,20 +161,20 @@ export const DashboardView: React.FC = () => {
           iconColor="#059669"
         />
         <StatCard
-          label="Enrolled Courses"
-          value={`${courses.length} Courses`}
-          subtext={`${totalCredits} total credit hours`}
+          label={t('dashboard.enrolledCourses')}
+          value={`${courses.length}`}
+          subtext={`${totalCredits} ${t('common.credits')}`}
           icon={<BookOpen size={24} />}
           iconBg="#f5f3ff"
           iconColor="#7c3aed"
         />
         <StatCard
-          label="Upcoming Deadlines"
+          label={t('dashboard.upcomingDeadlines')}
           value={upcomingDeadlines.length}
           subtext={
             upcomingDeadlines.length === 1
-              ? '1 assessment due soon'
-              : `${upcomingDeadlines.length} assessments scheduled`
+              ? `1 ${t('urgency.dueInDays', { days: 1 })}`
+              : `${upcomingDeadlines.length} ${t('nav.tasks')}`
           }
           icon={<CalendarCheck size={24} />}
           iconBg="#fffbeb"
@@ -314,7 +318,7 @@ export const DashboardView: React.FC = () => {
           <div className="section-header-row">
             <h3 className="section-title">
               <CalendarCheck size={18} color="var(--warning)" />
-              <span>Upcoming Deadlines</span>
+              <span>{t('dashboard.upcomingDeadlines')}</span>
             </h3>
 
             {assessments.length > 0 && (
@@ -346,7 +350,7 @@ export const DashboardView: React.FC = () => {
                         transition: 'all 0.15s ease',
                       }}
                     >
-                      All ({allUpcomingDeadlines.length})
+                      {t('dashboard.tabAll')} ({allUpcomingDeadlines.length})
                     </button>
 
                     <button
@@ -365,7 +369,7 @@ export const DashboardView: React.FC = () => {
                         transition: 'all 0.15s ease',
                       }}
                     >
-                      🔥 High ({highPriorityCount})
+                      {t('dashboard.tabHigh')} ({highPriorityCount})
                     </button>
 
                     <button
@@ -384,7 +388,7 @@ export const DashboardView: React.FC = () => {
                         transition: 'all 0.15s ease',
                       }}
                     >
-                      ⚡ This Week ({thisWeekCount})
+                      {t('dashboard.tabWeek')} ({thisWeekCount})
                     </button>
                   </div>
                 )}
@@ -395,7 +399,7 @@ export const DashboardView: React.FC = () => {
                   style={{ padding: '6px 12px', fontSize: '12.5px' }}
                   onClick={() => setActiveSection('assessments')}
                 >
-                  <span>All</span>
+                  <span>{t('dashboard.tabAll')}</span>
                   <ArrowRight size={13} />
                 </button>
               </div>
@@ -407,17 +411,17 @@ export const DashboardView: React.FC = () => {
               assessments.length === 0 ? (
                 <EmptyState
                   icon={<CalendarCheck size={28} />}
-                  title="No deadlines scheduled"
-                  description="Once you have courses added, you can log assignments, midterms, and project due dates here."
-                  actionText="View Assessments"
+                  title={t('dashboard.noDeadlinesScheduled')}
+                  description={t('dashboard.noDeadlinesScheduledDesc')}
+                  actionText={t('dashboard.viewAssessments')}
                   onAction={() => setActiveSection('assessments')}
                 />
               ) : (
                 <EmptyState
                   icon={<CalendarCheck size={28} />}
-                  title="No upcoming deadlines"
-                  description={`You have ${assessments.length} assessment${assessments.length > 1 ? 's' : ''}, but none have valid upcoming due dates.`}
-                  actionText="View All Assessments"
+                  title={t('dashboard.noUpcomingDeadlines')}
+                  description={t('dashboard.noUpcomingDeadlinesDesc', { count: assessments.length })}
+                  actionText={t('dashboard.allAssessments')}
                   onAction={() => setActiveSection('assessments')}
                 />
               )
@@ -432,7 +436,7 @@ export const DashboardView: React.FC = () => {
                 }}
               >
                 <p style={{ fontSize: '14px', fontWeight: 600, color: 'var(--text-main)', marginBottom: '6px' }}>
-                  No deadlines match the "{deadlinesTab === 'high' ? 'High Priority' : 'This Week'}" filter.
+                  {t('dashboard.noTabFilterMatch', { filter: deadlinesTab === 'high' ? t('dashboard.tabHigh') : t('dashboard.tabWeek') })}
                 </p>
                 <button
                   type="button"
@@ -440,7 +444,7 @@ export const DashboardView: React.FC = () => {
                   style={{ fontSize: '12.5px', padding: '5px 12px', marginTop: '6px' }}
                   onClick={() => setDeadlinesTab('all')}
                 >
-                  Show All Upcoming Deadlines
+                  {t('dashboard.showAllDeadlines')}
                 </button>
               </div>
             )
@@ -449,8 +453,8 @@ export const DashboardView: React.FC = () => {
               {upcomingDeadlines.slice(0, 5).map((a) => {
                 const targetCourse = courses.find((c) => c.id === a.courseId);
                 const theme = getCourseTheme(targetCourse || { code: a.courseCode });
-                const priorityMeta = getAssessmentPriorityMeta(a);
-                const urgency = getAssessmentUrgency(a.dueDate);
+                const priorityMeta = getAssessmentPriorityMeta(a, language);
+                const urgency = getAssessmentUrgency(a.dueDate, undefined, language);
 
                 return (
                   <div
@@ -547,16 +551,12 @@ export const DashboardView: React.FC = () => {
                             }}
                           >
                             <Clock size={10} />
-                            {urgency.daysDiff === 0
-                              ? 'Today'
-                              : urgency.daysDiff === 1
-                              ? 'Tomorrow'
-                              : `${urgency.daysDiff}d`}
+                            {urgency.badgeLabel || urgency.label}
                           </span>
                         )}
                       </div>
                       <div style={{ fontSize: '12.5px', color: 'var(--text-muted)', marginTop: '2px' }}>
-                        Max: {a.maxMarks} pts
+                        {t('common.maxMarks')}: {a.maxMarks} {t('common.points')}
                       </div>
                     </div>
                   </div>

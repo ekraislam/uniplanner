@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import type {
   Course,
   Assessment,
@@ -7,6 +7,7 @@ import type {
   CourseGradingConfig,
   GpaGradingConfig,
   UniPlannerBackupData,
+  Language,
 } from '../types';
 import { PlannerContext } from './PlannerContextDefinition';
 import {
@@ -15,9 +16,12 @@ import {
   loadCourses,
   loadAssessments,
   loadSettings,
+  loadLanguage,
+  saveLanguage,
   safeSetItem,
 } from '../utils/storage';
 import { exportBackupFile, getLastExportTime } from '../utils/backupRestore';
+import { translate } from '../locales';
 
 export const PlannerProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [activeSection, setActiveSection] = useState<NavSection>('dashboard');
@@ -54,6 +58,29 @@ export const PlannerProvider: React.FC<{ children: React.ReactNode }> = ({ child
   const [courses, setCourses] = useState<Course[]>(() => loadCourses());
   const [assessments, setAssessments] = useState<Assessment[]>(() => loadAssessments());
   const [settings, setSettings] = useState<StudentSettings>(() => loadSettings());
+
+  // Language and Localization
+  const [language, setLanguageState] = useState<Language>(() => loadLanguage());
+
+  const setLanguage = useCallback((newLang: Language) => {
+    setLanguageState(newLang);
+    saveLanguage(newLang);
+    setSettings((prev) => ({ ...prev, language: newLang }));
+    document.documentElement.setAttribute('data-lang', newLang);
+    document.documentElement.setAttribute('lang', newLang);
+  }, []);
+
+  useEffect(() => {
+    document.documentElement.setAttribute('data-lang', language);
+    document.documentElement.setAttribute('lang', language);
+  }, [language]);
+
+  const t = useCallback(
+    (key: string, params?: Record<string, string | number>) => {
+      return translate(language, key, params);
+    },
+    [language]
+  );
 
   // Reliable sync to localStorage whenever data changes
   useEffect(() => {
@@ -348,6 +375,11 @@ export const PlannerProvider: React.FC<{ children: React.ReactNode }> = ({ child
         isSidebarOpen,
         toggleSidebar,
         closeSidebar,
+
+        // Language & Localization
+        language,
+        setLanguage,
+        t,
 
         // Courses
         isAddCourseModalOpen,

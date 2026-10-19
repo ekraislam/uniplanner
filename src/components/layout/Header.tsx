@@ -1,43 +1,51 @@
 import React from 'react';
-import { Menu, Plus, Wifi, WifiOff, Download, RefreshCw } from 'lucide-react';
+import { Menu, Plus, Wifi, WifiOff, Download, RefreshCw, Globe } from 'lucide-react';
 import { usePlanner } from '../../context/usePlanner';
 import { usePwa } from '../../hooks/usePwa';
 import type { NavSection } from '../../types';
 
-const SECTION_TITLES: Record<NavSection, { title: string; subtitle: string }> = {
-  dashboard: {
-    title: 'Overview',
-    subtitle: 'Your study summary and term progress',
-  },
-  courses: {
-    title: 'Courses',
-    subtitle: 'Your subjects, credits, and target grades',
-  },
-  assessments: {
-    title: 'Exams & Tasks',
-    subtitle: 'Quizzes, midterms, assignments & finals',
-  },
-  results: {
-    title: 'Grade Analytics',
-    subtitle: 'Marks breakdown and academic performance',
-  },
-  'gpa-calculator': {
-    title: 'GPA Calculator',
-    subtitle: 'Calculate your term GPA and target CGPA',
-  },
-  settings: {
-    title: 'Settings',
-    subtitle: 'Grading scale, profile, and system settings',
-  },
-};
-
-
 export const Header: React.FC = () => {
-  const { activeSection, toggleSidebar, settings, openAddCourseModal, openInstallModal } = usePlanner();
+  const {
+    activeSection,
+    toggleSidebar,
+    settings,
+    openAddCourseModal,
+    openInstallModal,
+    language,
+    setLanguage,
+    t,
+  } = usePlanner();
   const { isOnline, isInstallable, isInstalled, hasUpdate, promptInstall, applyUpdate } = usePwa();
 
-  const currentMeta = SECTION_TITLES[activeSection] || {
-    title: 'Dashboard',
+  const sectionMeta: Record<NavSection, { title: string; subtitle: string }> = {
+    dashboard: {
+      title: t('nav.overview'),
+      subtitle: t('nav.overviewSubtitle'),
+    },
+    courses: {
+      title: t('nav.courses'),
+      subtitle: t('nav.coursesSubtitle'),
+    },
+    assessments: {
+      title: t('nav.assessments'),
+      subtitle: t('nav.assessmentsSubtitle'),
+    },
+    results: {
+      title: t('nav.results'),
+      subtitle: t('nav.resultsSubtitle'),
+    },
+    'gpa-calculator': {
+      title: t('nav.gpaCalculator'),
+      subtitle: t('nav.gpaSubtitle'),
+    },
+    settings: {
+      title: t('nav.settings'),
+      subtitle: t('nav.settingsSubtitle'),
+    },
+  };
+
+  const currentMeta = sectionMeta[activeSection] || {
+    title: t('nav.dashboard'),
     subtitle: 'Academic planning workspace',
   };
 
@@ -59,26 +67,34 @@ export const Header: React.FC = () => {
       </div>
 
       <div className="header-right">
+        {/* Language Switcher Pill */}
+        <button
+          type="button"
+          className="lang-toggle-btn"
+          onClick={() => setLanguage(language === 'en' ? 'bn' : 'en')}
+          title={language === 'en' ? 'বাংলা মোড চালু করুন' : 'Switch to English'}
+          aria-label="Toggle language mode"
+        >
+          <Globe size={14} color="var(--accent)" />
+          <span>{language === 'en' ? 'বাংলা' : 'English'}</span>
+        </button>
+
         {/* Offline / Online Status Indicator */}
         <div
           className={`network-status-pill ${isOnline ? 'online' : 'offline'}`}
           role="status"
           aria-live="polite"
-          title={
-            isOnline
-              ? 'Online: UniPlanner is connected. Local changes are saved in this browser.'
-              : 'Offline Mode: UniPlanner is running completely offline with local storage.'
-          }
+          title={isOnline ? t('nav.onlineTitle') : t('nav.offlineTitle')}
         >
           {isOnline ? (
             <>
               <Wifi size={13} className="network-icon" />
-              <span>Online</span>
+              <span>{t('nav.online')}</span>
             </>
           ) : (
             <>
               <WifiOff size={13} className="network-icon" />
-              <span>Offline</span>
+              <span>{t('nav.offline')}</span>
             </>
           )}
         </div>
@@ -92,7 +108,7 @@ export const Header: React.FC = () => {
             title="A new application update is ready. Click to refresh."
           >
             <RefreshCw size={13} />
-            <span>Update Ready</span>
+            <span>{t('nav.updateReady')}</span>
           </button>
         )}
 
@@ -114,13 +130,13 @@ export const Header: React.FC = () => {
             title="Install UniPlanner for offline standalone mobile or desktop use"
           >
             <Download size={14} />
-            <span>Install App</span>
+            <span>{t('nav.installApp')}</span>
           </button>
         )}
 
         <div className="term-indicator-pill">
           <span className="indicator-dot" />
-          <span>{settings.currentTerm || 'Current Term'}</span>
+          <span>{settings.currentTerm || t('nav.currentTerm')}</span>
         </div>
 
         <button
@@ -129,7 +145,7 @@ export const Header: React.FC = () => {
           onClick={() => openAddCourseModal()}
         >
           <Plus size={16} strokeWidth={2.5} />
-          <span>Add Course</span>
+          <span>{t('nav.addCourse')}</span>
         </button>
       </div>
     </header>

@@ -72,6 +72,39 @@
   --header-height: 70px;
 }
 
+/* Bengali (বাংলা) Typography Enhancement */
+html[data-lang="bn"] {
+  --font-heading: 'Hind Siliguri', 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+  --font-body: 'Hind Siliguri', 'Inter', system-ui, -apple-system, sans-serif;
+}
+
+html[data-lang="bn"] body {
+  letter-spacing: 0.01em;
+}
+
+/* Language Switcher Button */
+.lang-toggle-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  border-radius: var(--radius-full);
+  font-size: 13.5px;
+  font-weight: 700;
+  background-color: var(--bg-subtle);
+  color: var(--text-main);
+  border: 1px solid var(--border);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  white-space: nowrap;
+}
+
+.lang-toggle-btn:hover {
+  background-color: var(--primary-light);
+  color: var(--accent);
+  border-color: var(--accent-soft);
+}
+
 /* ==========================================================================
    CSS Reset & Base Rules
    ========================================================================== */

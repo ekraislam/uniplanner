@@ -1,4 +1,4 @@
-import type { Assessment, AssessmentPriority, AssessmentType } from '../types';
+import type { Assessment, AssessmentPriority, AssessmentType, Language } from '../types';
 
 /**
  * Returns a sensible default priority based on assessment type.
@@ -77,12 +77,49 @@ export const PRIORITY_CONFIG: Record<AssessmentPriority, PriorityMeta> = {
   },
 };
 
+export const PRIORITY_CONFIG_BN: Record<AssessmentPriority, { label: string; shortLabel: string; description: string }> = {
+  high: {
+    label: 'হাই প্রায়োরিটি (জরুরি)',
+    shortLabel: 'জরুরি',
+    description: 'বড় পরীক্ষা ও মূল প্রজেক্ট (ফাইনাল, মিডটার্ম, প্রজেক্ট)',
+  },
+  medium: {
+    label: 'মিডিয়াম প্রায়োরিটি',
+    shortLabel: 'মিডিয়াম',
+    description: 'ক্লাসওয়ার্ক ও প্রেজেন্টেশন (অ্যাসাইনমেন্ট, ল্যাব, সিটি)',
+  },
+  low: {
+    label: 'লো প্রায়োরিটি',
+    shortLabel: 'সাধারণ',
+    description: 'ছোটখাটো কুইজ ও অনুশীলন কাজ',
+  },
+};
+
+const BN_DIGITS = ['০', '১', '২', '৩', '৪', '৫', '৬', '৭', '৮', '৯'];
+
+/**
+ * Converts Western Arabic digits (0-9) to standard Bengali digits (০-৯).
+ */
+export function toBengaliNumber(val: string | number): string {
+  return String(val).replace(/\d/g, (d) => BN_DIGITS[Number(d)]);
+}
+
 /**
  * Returns priority metadata for an assessment, falling back to type-based default if not set.
  */
-export function getAssessmentPriorityMeta(assessment: Assessment): PriorityMeta {
+export function getAssessmentPriorityMeta(assessment: Assessment, lang: Language = 'en'): PriorityMeta {
   const priority = assessment.priority || getDefaultPriorityForType(assessment.type);
-  return PRIORITY_CONFIG[priority] || PRIORITY_CONFIG.medium;
+  const base = PRIORITY_CONFIG[priority] || PRIORITY_CONFIG.medium;
+  if (lang === 'bn') {
+    const bnMeta = PRIORITY_CONFIG_BN[priority] || PRIORITY_CONFIG_BN.medium;
+    return {
+      ...base,
+      label: bnMeta.label,
+      shortLabel: bnMeta.shortLabel,
+      description: bnMeta.description,
+    };
+  }
+  return base;
 }
 
 export type UrgencyLevel =
@@ -97,6 +134,7 @@ export type UrgencyLevel =
 export interface UrgencyInfo {
   level: UrgencyLevel;
   label: string;
+  badgeLabel: string;
   daysDiff: number | null;
   isUrgent: boolean;
   color: string;
@@ -128,11 +166,19 @@ export function getDaysDifference(targetDateStr: string, baseDate = new Date()):
 /**
  * Evaluates urgency status of an assessment due date.
  */
-export function getAssessmentUrgency(dueDateStr?: string, baseDate = new Date()): UrgencyInfo {
+export function getAssessmentUrgency(
+  dueDateStr?: string,
+  baseDate?: Date,
+  lang: Language = 'en'
+): UrgencyInfo {
+  const isBn = lang === 'bn';
+  const effectiveBaseDate = baseDate || new Date();
+
   if (!dueDateStr || !dueDateStr.trim()) {
     return {
       level: 'no-date',
-      label: 'No deadline',
+      label: isBn ? 'তারিখ নির্ধারিত নেই' : 'No deadline',
+      badgeLabel: '',
       daysDiff: null,
       isUrgent: false,
       color: 'var(--text-dim)',
@@ -141,11 +187,12 @@ export function getAssessmentUrgency(dueDateStr?: string, baseDate = new Date())
     };
   }
 
-  const days = getDaysDifference(dueDateStr, baseDate);
+  const days = getDaysDifference(dueDateStr, effectiveBaseDate);
   if (days === null) {
     return {
       level: 'no-date',
       label: dueDateStr,
+      badgeLabel: '',
       daysDiff: null,
       isUrgent: false,
       color: 'var(--text-dim)',
@@ -156,9 +203,15 @@ export function getAssessmentUrgency(dueDateStr?: string, baseDate = new Date())
 
   if (days < 0) {
     const absDays = Math.abs(days);
+    const bnAbsDays = toBengaliNumber(absDays);
+    const label = isBn
+      ? absDays === 1 ? '১ দিন পার হয়ে গেছে' : `${bnAbsDays} দিন পার হয়ে গেছে`
+      : absDays === 1 ? 'Overdue by 1 day' : `Overdue by ${absDays} days`;
+    const badgeLabel = isBn ? `${bnAbsDays} দিন পার` : `-${absDays}d`;
     return {
       level: 'overdue',
-      label: absDays === 1 ? 'Overdue by 1 day' : `Overdue by ${absDays} days`,
+      label,
+      badgeLabel,
       daysDiff: days,
       isUrgent: true,
       color: '#dc2626',
@@ -170,7 +223,8 @@ export function getAssessmentUrgency(dueDateStr?: string, baseDate = new Date())
   if (days === 0) {
     return {
       level: 'today',
-      label: 'Due Today',
+      label: isBn ? 'আজকের ডেডলাইন' : 'Due Today',
+      badgeLabel: isBn ? 'আজকে' : 'Today',
       daysDiff: 0,
       isUrgent: true,
       color: '#dc2626',
@@ -182,7 +236,8 @@ export function getAssessmentUrgency(dueDateStr?: string, baseDate = new Date())
   if (days === 1) {
     return {
       level: 'tomorrow',
-      label: 'Due Tomorrow',
+      label: isBn ? 'আগামীকাল শেষ দিন' : 'Due Tomorrow',
+      badgeLabel: isBn ? 'কালকে' : 'Tomorrow',
       daysDiff: 1,
       isUrgent: true,
       color: '#ea580c',
@@ -191,10 +246,13 @@ export function getAssessmentUrgency(dueDateStr?: string, baseDate = new Date())
     };
   }
 
+  const bnDays = toBengaliNumber(days);
+
   if (days <= 3) {
     return {
       level: 'within-3-days',
-      label: `Due in ${days} days`,
+      label: isBn ? `${bnDays} দিন বাকি` : `Due in ${days} days`,
+      badgeLabel: isBn ? `${bnDays} দিন` : `${days}d`,
       daysDiff: days,
       isUrgent: true,
       color: '#d97706',
@@ -206,7 +264,8 @@ export function getAssessmentUrgency(dueDateStr?: string, baseDate = new Date())
   if (days <= 7) {
     return {
       level: 'within-week',
-      label: `Due in ${days} days`,
+      label: isBn ? `${bnDays} দিন বাকি` : `Due in ${days} days`,
+      badgeLabel: isBn ? `${bnDays} দিন` : `${days}d`,
       daysDiff: days,
       isUrgent: false,
       color: 'var(--accent)',
@@ -217,7 +276,8 @@ export function getAssessmentUrgency(dueDateStr?: string, baseDate = new Date())
 
   return {
     level: 'later',
-    label: `In ${days} days`,
+    label: isBn ? `${bnDays} দিন পর` : `In ${days} days`,
+    badgeLabel: isBn ? `${bnDays} দিন` : `${days}d`,
     daysDiff: days,
     isUrgent: false,
     color: 'var(--text-muted)',

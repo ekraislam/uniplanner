@@ -9,6 +9,8 @@ export const DeleteCourseModal: React.FC = () => {
     closeDeleteCourseModal,
     deleteCourse,
     assessments,
+    language,
+    t,
   } = usePlanner();
 
   if (!courseToDelete) return null;
@@ -27,7 +29,7 @@ export const DeleteCourseModal: React.FC = () => {
     <Modal
       isOpen={!!courseToDelete}
       onClose={closeDeleteCourseModal}
-      title="Delete Course Confirmation"
+      title={language === 'bn' ? 'কোর্স মুছে ফেলার নিশ্চয়তা' : 'Delete Course Confirmation'}
     >
       <div className="modal-body">
         <div style={{ display: 'flex', gap: '16px', alignItems: 'flex-start' }}>
@@ -89,7 +91,9 @@ export const DeleteCourseModal: React.FC = () => {
           </div>
         ) : (
           <p style={{ fontSize: '14px', color: 'var(--text-muted)', lineHeight: 1.5 }}>
-            Are you sure you want to remove this course from your academic planner? This action cannot be undone.
+            {language === 'bn'
+              ? 'আপনি কি নিশ্চিত যে এই কোর্সটি আপনার প্ল্যানার থেকে মুছে ফেলতে চান? এটি পুনরায় ফিরিয়ে আনা সম্ভব নয়।'
+              : 'Are you sure you want to remove this course from your academic planner? This action cannot be undone.'}
           </p>
         )}
       </div>
@@ -100,7 +104,7 @@ export const DeleteCourseModal: React.FC = () => {
           className="btn-secondary"
           onClick={closeDeleteCourseModal}
         >
-          Cancel
+          {t('common.cancel')}
         </button>
         <button
           type="button"
@@ -109,9 +113,9 @@ export const DeleteCourseModal: React.FC = () => {
         >
           <Trash2 size={15} />
           <span>
-            {hasAssessments
-              ? `Delete Course & ${relatedAssessments.length} Assessment${relatedAssessments.length > 1 ? 's' : ''}`
-              : 'Confirm Delete Course'}
+            {language === 'bn'
+              ? (hasAssessments ? `কোর্স এবং ${relatedAssessments.length}টি অ্যাসেসমেন্ট মুছে ফেলুন` : 'কোর্সটি মুছে ফেলুন')
+              : (hasAssessments ? `Delete Course & ${relatedAssessments.length} Assessment${relatedAssessments.length > 1 ? 's' : ''}` : 'Confirm Delete Course')}
           </span>
         </button>
       </div>

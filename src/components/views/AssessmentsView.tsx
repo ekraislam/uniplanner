@@ -36,6 +36,8 @@ export const AssessmentsView: React.FC = () => {
     openAddCourseModal,
     openAddAssessmentModal,
     openDeleteAssessmentModal,
+    language,
+    t,
   } = usePlanner();
 
   // Filter and Sort states
@@ -70,7 +72,7 @@ export const AssessmentsView: React.FC = () => {
       <div className="view-header">
         <div className="view-title-group">
           <h2>
-            Exams & Assignments
+            {t('assessments.title')}
             {assessments.length > 0 && (
               <span
                 style={{
@@ -80,11 +82,11 @@ export const AssessmentsView: React.FC = () => {
                   marginLeft: '10px',
                 }}
               >
-                ({assessments.length} total)
+                {t('assessments.totalCount', { count: assessments.length })}
               </span>
             )}
           </h2>
-          <p>Track quizzes, midterms, assignments, and finals</p>
+          <p>{t('assessments.subtitle')}</p>
         </div>
 
         {courses.length > 0 && (
@@ -94,7 +96,7 @@ export const AssessmentsView: React.FC = () => {
             onClick={() => openAddAssessmentModal()}
           >
             <Plus size={16} strokeWidth={2.5} />
-            <span>Add Assessment</span>
+            <span>{t('assessments.addAssessment')}</span>
           </button>
         )}
       </div>
@@ -102,17 +104,17 @@ export const AssessmentsView: React.FC = () => {
       {courses.length === 0 ? (
         <EmptyState
           icon={<BookOpen size={32} />}
-          title="Add a course first"
-          description="You need to add at least one course before adding quizzes, assignments, or exams."
-          actionText="Add Your First Course"
+          title={t('assessments.addCourseFirst')}
+          description={t('assessments.addCourseFirstDesc')}
+          actionText={t('dashboard.addFirstCourse')}
           onAction={() => openAddCourseModal()}
         />
       ) : assessments.length === 0 ? (
         <EmptyState
           icon={<CalendarCheck size={32} />}
-          title="No exams or tasks added yet"
-          description={`You have ${courses.length} course${courses.length > 1 ? 's' : ''} enrolled. Add your upcoming quizzes, midterms, and assignments to stay on track.`}
-          actionText="Add First Assessment"
+          title={t('assessments.noAssessmentsAdded')}
+          description={t('assessments.noAssessmentsAddedDesc', { count: courses.length, plural: courses.length > 1 ? 's' : '' })}
+          actionText={t('assessments.addFirstAssessment')}
           onAction={() => openAddAssessmentModal()}
         />
       ) : (
@@ -134,13 +136,13 @@ export const AssessmentsView: React.FC = () => {
           >
             <div style={{ display: 'flex', alignItems: 'center', gap: '8px', color: 'var(--text-muted)', fontSize: '14.5px', fontWeight: 700 }}>
               <Filter size={17} />
-              <span>Filter:</span>
+              <span>{t('common.filter')}:</span>
             </div>
 
             {/* Filter by Course */}
             <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
               <label htmlFor="filter-course-select" style={{ fontSize: '14px', fontWeight: 600, color: 'var(--text-muted)' }}>
-                Course:
+                {t('assessments.filterCourse')}
               </label>
               <select
                 id="filter-course-select"
@@ -149,7 +151,7 @@ export const AssessmentsView: React.FC = () => {
                 value={selectedCourseFilter}
                 onChange={(e) => setSelectedCourseFilter(e.target.value)}
               >
-                <option value="all">All Courses ({courses.length})</option>
+                <option value="all">{t('assessments.allCoursesCount', { count: courses.length })}</option>
                 {courses.map((c) => (
                   <option key={c.id} value={c.id}>
                     {c.code}
@@ -161,7 +163,7 @@ export const AssessmentsView: React.FC = () => {
             {/* Filter by Type */}
             <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
               <label htmlFor="filter-type-select" style={{ fontSize: '14px', fontWeight: 600, color: 'var(--text-muted)' }}>
-                Type:
+                {t('assessments.filterType')}
               </label>
               <select
                 id="filter-type-select"
@@ -170,10 +172,10 @@ export const AssessmentsView: React.FC = () => {
                 value={selectedTypeFilter}
                 onChange={(e) => setSelectedTypeFilter(e.target.value)}
               >
-                <option value="all">All Types</option>
-                {VALID_ASSESSMENT_TYPES.map((t) => (
-                  <option key={t} value={t}>
-                    {t}
+                <option value="all">{t('assessments.allTypes')}</option>
+                {VALID_ASSESSMENT_TYPES.map((tItem) => (
+                  <option key={tItem} value={tItem}>
+                    {tItem}
                   </option>
                 ))}
               </select>
@@ -182,7 +184,7 @@ export const AssessmentsView: React.FC = () => {
             {/* Filter by Priority */}
             <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
               <label htmlFor="filter-priority-select" style={{ fontSize: '14px', fontWeight: 600, color: 'var(--text-muted)' }}>
-                Priority:
+                {t('assessments.filterPriority')}
               </label>
               <select
                 id="filter-priority-select"
@@ -191,10 +193,10 @@ export const AssessmentsView: React.FC = () => {
                 value={selectedPriorityFilter}
                 onChange={(e) => setSelectedPriorityFilter(e.target.value)}
               >
-                <option value="all">All Priorities</option>
-                <option value="high">🔴 High Priority</option>
-                <option value="medium">🟡 Medium Priority</option>
-                <option value="low">🟢 Low Priority</option>
+                <option value="all">{t('assessments.allPriorities')}</option>
+                <option value="high">{t('assessments.highPriorityOption')}</option>
+                <option value="medium">{t('assessments.mediumPriorityOption')}</option>
+                <option value="low">{t('assessments.lowPriorityOption')}</option>
               </select>
             </div>
 
@@ -202,7 +204,7 @@ export const AssessmentsView: React.FC = () => {
             <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginLeft: 'auto' }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: '6px', color: 'var(--text-muted)', fontSize: '14px', fontWeight: 600 }}>
                 <ArrowUpDown size={15} />
-                <label htmlFor="sort-assessments-select">Sort:</label>
+                <label htmlFor="sort-assessments-select">{t('assessments.sortLabel')}</label>
               </div>
               <select
                 id="sort-assessments-select"
@@ -211,11 +213,11 @@ export const AssessmentsView: React.FC = () => {
                 value={sortBy}
                 onChange={(e) => setSortBy(e.target.value as AssessmentSortOption)}
               >
-                <option value="dueDateAsc">📅 Due Date (Earliest First)</option>
-                <option value="priorityDesc">🔥 Priority (High to Low)</option>
-                <option value="dueDateDesc">⌛ Due Date (Latest First)</option>
-                <option value="marksDesc">💯 Max Marks (Highest First)</option>
-                <option value="titleAsc">🔤 Title (A to Z)</option>
+                <option value="dueDateAsc">{t('assessments.sortDueAsc')}</option>
+                <option value="priorityDesc">{t('assessments.sortPriorityDesc')}</option>
+                <option value="dueDateDesc">{t('assessments.sortDueDesc')}</option>
+                <option value="marksDesc">{t('assessments.sortMarksDesc')}</option>
+                <option value="titleAsc">{t('assessments.sortTitleAsc')}</option>
               </select>
             </div>
 
@@ -231,7 +233,7 @@ export const AssessmentsView: React.FC = () => {
                   setSortBy('dueDateAsc');
                 }}
               >
-                Reset All
+                {t('common.resetAll')}
               </button>
             )}
           </div>
@@ -249,10 +251,10 @@ export const AssessmentsView: React.FC = () => {
               }}
             >
               <p style={{ fontSize: '16px', fontWeight: 700, color: 'var(--text-main)', marginBottom: '8px' }}>
-                No assessments match the selected filter criteria.
+                {t('assessments.noMatchTitle')}
               </p>
               <p style={{ fontSize: '14px', marginBottom: '16px' }}>
-                Try changing the course or assessment type filter.
+                {t('assessments.noMatchDesc')}
               </p>
               <button
                 type="button"
@@ -261,9 +263,11 @@ export const AssessmentsView: React.FC = () => {
                 onClick={() => {
                   setSelectedCourseFilter('all');
                   setSelectedTypeFilter('all');
+                  setSelectedPriorityFilter('all');
+                  setSortBy('dueDateAsc');
                 }}
               >
-                Clear Filters
+                {t('common.clearFilters')}
               </button>
             </div>
           ) : (
@@ -282,8 +286,8 @@ export const AssessmentsView: React.FC = () => {
                     ? `${a.customType} (Other)`
                     : a.type;
 
-                const priorityMeta = getAssessmentPriorityMeta(a);
-                const urgency = getAssessmentUrgency(a.dueDate);
+                const priorityMeta = getAssessmentPriorityMeta(a, language);
+                const urgency = getAssessmentUrgency(a.dueDate, undefined, language);
 
                 return (
                   <div
@@ -368,7 +372,7 @@ export const AssessmentsView: React.FC = () => {
                       >
                         <div>
                           <div style={{ fontSize: '13px', color: 'var(--text-dim)', textTransform: 'uppercase', letterSpacing: '0.5px', fontWeight: 700 }}>
-                            {hasObtainedMarks ? 'Score' : 'Max Marks'}
+                            {hasObtainedMarks ? t('common.score') : t('common.maxMarks')}
                           </div>
                           <div style={{ fontSize: '18px', fontWeight: 800, color: 'var(--text-main)', marginTop: '2px' }}>
                             {hasObtainedMarks ? (
@@ -376,7 +380,7 @@ export const AssessmentsView: React.FC = () => {
                                 {a.obtainedMarks} <span style={{ fontSize: '14.5px', color: 'var(--text-muted)', fontWeight: 600 }}>/ {a.maxMarks}</span>
                               </span>
                             ) : (
-                              <span>{a.maxMarks} pts</span>
+                              <span>{a.maxMarks} {t('common.points')}</span>
                             )}
                           </div>
                         </div>
@@ -416,7 +420,7 @@ export const AssessmentsView: React.FC = () => {
                               }}
                             >
                               <Clock size={14} />
-                              <span>Results Pending</span>
+                              <span>{t('common.resultsPending')}</span>
                             </span>
                           )}
                         </div>
@@ -436,7 +440,7 @@ export const AssessmentsView: React.FC = () => {
                       >
                         <Calendar size={15} color="var(--accent)" />
                         <span>
-                          Due: <strong>{formatDueDate(a.dueDate)}</strong>
+                          {t('common.due')}: <strong>{formatDueDate(a.dueDate)}</strong>
                         </span>
                         {a.dueDate && (
                           <span
@@ -503,11 +507,11 @@ export const AssessmentsView: React.FC = () => {
                             transition: 'all 0.15s ease',
                           }}
                           onClick={() => openAddAssessmentModal(a)}
-                          title={`Edit ${a.title}`}
-                          aria-label={`Edit ${a.title}`}
+                          title={`${t('common.edit')} ${a.title}`}
+                          aria-label={`${t('common.edit')} ${a.title}`}
                         >
                           <Edit3 size={15} />
-                          <span>Edit</span>
+                          <span>{t('common.edit')}</span>
                         </button>
 
                         <button
@@ -528,11 +532,11 @@ export const AssessmentsView: React.FC = () => {
                             transition: 'all 0.15s ease',
                           }}
                           onClick={() => openDeleteAssessmentModal(a)}
-                          title={`Delete ${a.title}`}
-                          aria-label={`Delete ${a.title}`}
+                          title={`${t('common.delete')} ${a.title}`}
+                          aria-label={`${t('common.delete')} ${a.title}`}
                         >
                           <Trash2 size={15} />
-                          <span>Delete</span>
+                          <span>{t('common.delete')}</span>
                         </button>
                       </div>
                     </div>

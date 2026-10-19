@@ -8,6 +8,7 @@ export const DeleteAssessmentModal: React.FC = () => {
     assessmentToDelete,
     closeDeleteAssessmentModal,
     deleteAssessment,
+    t,
   } = usePlanner();
 
   if (!assessmentToDelete) return null;
@@ -26,7 +27,7 @@ export const DeleteAssessmentModal: React.FC = () => {
     <Modal
       isOpen={!!assessmentToDelete}
       onClose={closeDeleteAssessmentModal}
-      title="Delete Assessment Confirmation"
+      title={t('modals.deleteAssessmentModalTitle')}
     >
       <div className="modal-body">
         <div style={{ display: 'flex', gap: '16px', alignItems: 'flex-start' }}>
@@ -48,16 +49,20 @@ export const DeleteAssessmentModal: React.FC = () => {
 
           <div>
             <h4 style={{ fontSize: '16px', fontWeight: 700, marginBottom: '6px' }}>
-              Delete "{assessmentToDelete.title}"?
+              {t('modals.deleteAssessmentQuestion', { title: assessmentToDelete.title })}
             </h4>
             <p style={{ fontSize: '13.5px', color: 'var(--text-muted)', lineHeight: '1.5' }}>
-              Course: <strong>{assessmentToDelete.courseCode}</strong> • Type: <strong>{displayType}</strong> • Max Marks: <strong>{assessmentToDelete.maxMarks}</strong>
+              {t('modals.deleteAssessmentMeta', {
+                code: assessmentToDelete.courseCode,
+                type: displayType,
+                maxMarks: String(assessmentToDelete.maxMarks),
+              })}
             </p>
           </div>
         </div>
 
         <p style={{ fontSize: '14px', color: 'var(--text-muted)', lineHeight: '1.5', marginTop: '12px' }}>
-          Are you sure you want to delete this assessment record? Any marks or deadlines recorded for this assessment will be permanently removed. This action cannot be undone.
+          {t('modals.deleteAssessmentWarning')}
         </p>
       </div>
 
@@ -67,7 +72,7 @@ export const DeleteAssessmentModal: React.FC = () => {
           className="btn-secondary"
           onClick={closeDeleteAssessmentModal}
         >
-          Cancel
+          {t('common.cancel')}
         </button>
         <button
           type="button"
@@ -75,7 +80,7 @@ export const DeleteAssessmentModal: React.FC = () => {
           onClick={handleConfirmDelete}
         >
           <Trash2 size={15} />
-          <span>Confirm Delete Assessment</span>
+          <span>{t('modals.confirmDeleteAssessmentBtn')}</span>
         </button>
       </div>
     </Modal>

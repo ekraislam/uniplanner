@@ -3,7 +3,7 @@ import { Modal } from '../common/Modal';
 import { usePlanner } from '../../context/usePlanner';
 import type { Assessment, AssessmentType, AssessmentPriority } from '../../types';
 import { VALID_ASSESSMENT_TYPES } from '../../utils/storage';
-import { getDefaultPriorityForType, PRIORITY_CONFIG } from '../../utils/priorityUtils';
+import { getDefaultPriorityForType, PRIORITY_CONFIG, PRIORITY_CONFIG_BN } from '../../utils/priorityUtils';
 import { Flame, AlertTriangle, ShieldCheck } from 'lucide-react';
 
 interface AssessmentFormProps {
@@ -17,7 +17,7 @@ const AssessmentForm: React.FC<AssessmentFormProps> = ({
   defaultCourseId,
   onClose,
 }) => {
-  const { courses, addAssessment, updateAssessment } = usePlanner();
+  const { courses, addAssessment, updateAssessment, language, t } = usePlanner();
 
   const [title, setTitle] = useState(assessmentToEdit ? assessmentToEdit.title : '');
   const [courseId, setCourseId] = useState(
@@ -187,13 +187,13 @@ const AssessmentForm: React.FC<AssessmentFormProps> = ({
         {/* Assessment Title */}
         <div className="form-group">
           <label className="form-label" htmlFor="asm-title-input">
-            Assessment Title <span style={{ color: 'var(--danger)' }}>*</span>
+            {t('modals.asmTitle')} <span style={{ color: 'var(--danger)' }}>*</span>
           </label>
           <input
             id="asm-title-input"
             type="text"
             className={`form-input ${errors.title ? 'input-error' : ''}`}
-            placeholder="e.g. Midterm Examination, Assignment 1 — Sorting"
+            placeholder={t('modals.asmTitlePlaceholder')}
             value={title}
             onChange={(e) => {
               setTitle(e.target.value);
@@ -215,7 +215,7 @@ const AssessmentForm: React.FC<AssessmentFormProps> = ({
         <div className="form-grid">
           <div className="form-group">
             <label className="form-label" htmlFor="asm-course-select">
-              Associated Course <span style={{ color: 'var(--danger)' }}>*</span>
+              {t('modals.asmCourse')} <span style={{ color: 'var(--danger)' }}>*</span>
             </label>
             <select
               id="asm-course-select"
@@ -230,7 +230,7 @@ const AssessmentForm: React.FC<AssessmentFormProps> = ({
               aria-describedby={errors.courseId ? 'asm-course-error' : undefined}
             >
               {courses.length === 0 ? (
-                <option value="">No courses available</option>
+                <option value="">{t('modals.noCoursesAvailable')}</option>
               ) : (
                 courses.map((c) => (
                   <option key={c.id} value={c.id}>
@@ -248,7 +248,7 @@ const AssessmentForm: React.FC<AssessmentFormProps> = ({
 
           <div className="form-group">
             <label className="form-label" htmlFor="asm-type-select">
-              Assessment Type <span style={{ color: 'var(--danger)' }}>*</span>
+              {t('modals.asmType')} <span style={{ color: 'var(--danger)' }}>*</span>
             </label>
             <select
               id="asm-type-select"
@@ -263,9 +263,9 @@ const AssessmentForm: React.FC<AssessmentFormProps> = ({
                 if (errors.customType) setErrors((prev) => ({ ...prev, customType: undefined }));
               }}
             >
-              {VALID_ASSESSMENT_TYPES.map((t) => (
-                <option key={t} value={t}>
-                  {t}
+              {VALID_ASSESSMENT_TYPES.map((tItem) => (
+                <option key={tItem} value={tItem}>
+                  {tItem}
                 </option>
               ))}
             </select>
@@ -304,13 +304,13 @@ const AssessmentForm: React.FC<AssessmentFormProps> = ({
         {type === 'Other' && (
           <div className="form-group">
             <label className="form-label" htmlFor="asm-custom-type-input">
-              Custom Assessment Type <span style={{ color: 'var(--danger)' }}>*</span>
+              {t('modals.customType')} <span style={{ color: 'var(--danger)' }}>*</span>
             </label>
             <input
               id="asm-custom-type-input"
               type="text"
               className={`form-input ${errors.customType ? 'input-error' : ''}`}
-              placeholder="e.g. Case Study, Viva, Seminar Paper"
+              placeholder={t('modals.customTypePlaceholder')}
               value={customType}
               onChange={(e) => {
                 setCustomType(e.target.value);
@@ -332,7 +332,7 @@ const AssessmentForm: React.FC<AssessmentFormProps> = ({
         <div className="form-grid">
           <div className="form-group">
             <label className="form-label" htmlFor="asm-max-marks-input">
-              Maximum Marks <span style={{ color: 'var(--danger)' }}>*</span>
+              {t('modals.maxMarks')} <span style={{ color: 'var(--danger)' }}>*</span>
             </label>
             <input
               id="asm-max-marks-input"
@@ -359,7 +359,7 @@ const AssessmentForm: React.FC<AssessmentFormProps> = ({
 
           <div className="form-group">
             <label className="form-label" htmlFor="asm-obtained-marks-input">
-              Obtained Marks (Optional)
+              {t('modals.obtainedMarks')}
             </label>
             <input
               id="asm-obtained-marks-input"
@@ -367,7 +367,7 @@ const AssessmentForm: React.FC<AssessmentFormProps> = ({
               step="any"
               min="0"
               className={`form-input ${errors.obtainedMarks ? 'input-error' : ''}`}
-              placeholder="Leave empty if not released"
+              placeholder={t('modals.obtainedMarksPlaceholder')}
               value={obtainedMarks}
               onChange={(e) => {
                 setObtainedMarks(e.target.value);
@@ -377,7 +377,7 @@ const AssessmentForm: React.FC<AssessmentFormProps> = ({
               aria-describedby={errors.obtainedMarks ? 'asm-obtained-error' : undefined}
             />
             <span style={{ fontSize: '11.5px', color: 'var(--text-dim)', marginTop: '2px' }}>
-              Leave blank if results are pending (not counted as zero)
+              {t('modals.obtainedMarksHint')}
             </span>
             {errors.obtainedMarks && (
               <span id="asm-obtained-error" style={{ fontSize: '12px', color: 'var(--danger)', marginTop: '2px' }}>
@@ -391,7 +391,7 @@ const AssessmentForm: React.FC<AssessmentFormProps> = ({
         <div className="form-grid">
           <div className="form-group">
             <label className="form-label" htmlFor="asm-due-date-input">
-              Due Date (Optional)
+              {t('modals.dueDate')}
             </label>
             <input
               id="asm-due-date-input"
@@ -411,13 +411,13 @@ const AssessmentForm: React.FC<AssessmentFormProps> = ({
               </span>
             )}
             <span style={{ fontSize: '11.5px', color: 'var(--text-dim)', marginTop: '4px', display: 'block' }}>
-              Used to track timeline & upcoming deadlines
+              {t('modals.dueDateHint')}
             </span>
           </div>
 
           <div className="form-group">
             <label className="form-label" id="asm-priority-label">
-              Priority Level
+              {t('modals.priorityLevel')}
             </label>
             <div
               role="radiogroup"
@@ -430,7 +430,9 @@ const AssessmentForm: React.FC<AssessmentFormProps> = ({
             >
               {(['high', 'medium', 'low'] as AssessmentPriority[]).map((p) => {
                 const isSelected = priority === p;
-                const meta = PRIORITY_CONFIG[p];
+                const meta = language === 'bn'
+                  ? { ...PRIORITY_CONFIG[p], ...PRIORITY_CONFIG_BN[p] }
+                  : PRIORITY_CONFIG[p];
                 return (
                   <button
                     key={p}
@@ -468,7 +470,7 @@ const AssessmentForm: React.FC<AssessmentFormProps> = ({
               })}
             </div>
             <span style={{ fontSize: '11.5px', color: 'var(--text-dim)', marginTop: '4px', display: 'block' }}>
-              {PRIORITY_CONFIG[priority].description}
+              {language === 'bn' ? PRIORITY_CONFIG_BN[priority].description : PRIORITY_CONFIG[priority].description}
             </span>
           </div>
         </div>
@@ -476,13 +478,13 @@ const AssessmentForm: React.FC<AssessmentFormProps> = ({
         {/* Description / Syllabus Notes */}
         <div className="form-group">
           <label className="form-label" htmlFor="asm-desc-input">
-            Notes / Description (Optional)
+            {t('modals.notes')}
           </label>
           <textarea
             id="asm-desc-input"
             rows={3}
             className="form-input"
-            placeholder="e.g. Chapters 1 to 4 coverage, bring scientific calculator"
+            placeholder={t('modals.notesPlaceholder')}
             value={description}
             onChange={(e) => setDescription(e.target.value)}
             style={{ resize: 'vertical' }}
@@ -496,10 +498,10 @@ const AssessmentForm: React.FC<AssessmentFormProps> = ({
           className="btn-secondary"
           onClick={onClose}
         >
-          Cancel
+          {t('common.cancel')}
         </button>
         <button type="submit" className="btn-primary">
-          {assessmentToEdit ? 'Save Changes' : 'Create Assessment'}
+          {assessmentToEdit ? t('modals.saveChangesBtn') : t('modals.createAssessmentBtn')}
         </button>
       </div>
     </form>
@@ -512,6 +514,7 @@ export const AddAssessmentModal: React.FC = () => {
     closeAddAssessmentModal,
     assessmentToEdit,
     preselectedCourseId,
+    t,
   } = usePlanner();
 
   if (!isAddAssessmentModalOpen) return null;
@@ -520,7 +523,7 @@ export const AddAssessmentModal: React.FC = () => {
     <Modal
       isOpen={isAddAssessmentModalOpen}
       onClose={closeAddAssessmentModal}
-      title={assessmentToEdit ? 'Edit Assessment' : 'Add New Assessment'}
+      title={assessmentToEdit ? t('modals.editAssessmentTitle') : t('modals.addAssessmentTitle')}
     >
       <AssessmentForm
         key={assessmentToEdit ? assessmentToEdit.id : `new-asm-${preselectedCourseId || 'default'}`}

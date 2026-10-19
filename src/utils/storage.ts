@@ -9,6 +9,7 @@ import type {
   GradeBoundary,
   GpaGradingConfig,
   GpaScaleRule,
+  Language,
 } from '../types';
 import { getDefaultGpaConfig } from './gpaCalculation';
 
@@ -17,6 +18,7 @@ export const STORAGE_KEYS = {
   ASSESSMENTS: 'uniplanner_assessments_v1',
   SETTINGS: 'uniplanner_settings_v1',
   LAST_BACKUP_EXPORT: 'uniplanner_last_backup_export_v1',
+  LANGUAGE: 'uniplanner_language_v1',
 };
 
 export const DEFAULT_SETTINGS: StudentSettings = {
@@ -26,6 +28,7 @@ export const DEFAULT_SETTINGS: StudentSettings = {
   gradingScale: '4.0_ugc',
   currentTerm: 'Fall 2026',
   targetGpa: 3.75,
+  language: 'en',
   gpaConfig: getDefaultGpaConfig('4.0_ugc'),
 };
 
@@ -344,6 +347,24 @@ export function loadSettings(): StudentSettings {
     targetGpa: typeof parsed.targetGpa === 'number' && !isNaN(parsed.targetGpa)
       ? parsed.targetGpa
       : DEFAULT_SETTINGS.targetGpa,
+    language: parsed.language === 'bn' || safeGetItem<Language>(STORAGE_KEYS.LANGUAGE, 'en') === 'bn' ? 'bn' : 'en',
     gpaConfig,
   };
+}
+
+/**
+ * Loads currently active language with localStorage priority.
+ */
+export function loadLanguage(): Language {
+  const direct = safeGetItem<string>(STORAGE_KEYS.LANGUAGE, '');
+  if (direct === 'bn' || direct === 'en') return direct;
+  const settings = safeGetItem<Record<string, unknown>>(STORAGE_KEYS.SETTINGS, {});
+  return settings.language === 'bn' ? 'bn' : 'en';
+}
+
+/**
+ * Persists language preference immediately.
+ */
+export function saveLanguage(lang: Language): void {
+  safeSetItem(STORAGE_KEYS.LANGUAGE, lang);
 }

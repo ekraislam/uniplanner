@@ -88,6 +88,8 @@ export interface GpaGradingConfig {
   minPassingGradePoint?: number;
 }
 
+export type Language = 'en' | 'bn';
+
 export interface StudentSettings {
   universityName: string;
   studentName: string;
@@ -95,6 +97,7 @@ export interface StudentSettings {
   gradingScale: '4.0' | '4.0_ugc' | '4.33' | '5.0' | 'percentage';
   currentTerm: string;
   targetGpa: number;
+  language?: Language;
   gpaConfig?: GpaGradingConfig;
 }
 

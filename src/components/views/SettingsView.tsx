@@ -15,6 +15,7 @@ import {
   Wifi,
   WifiOff,
   RefreshCw,
+  Globe,
 } from 'lucide-react';
 import { usePlanner } from '../../context/usePlanner';
 import { usePwa } from '../../hooks/usePwa';
@@ -56,6 +57,9 @@ export const SettingsView: React.FC = () => {
     triggerExportBackup,
     restoreFromBackup,
     openInstallModal,
+    language,
+    setLanguage,
+    t,
   } = usePlanner();
 
   const {
@@ -170,6 +174,7 @@ export const SettingsView: React.FC = () => {
       gradingScale: gradingScale as '4.0' | '4.0_ugc' | '4.33' | '5.0' | 'percentage',
       currentTerm: currentTerm.trim() || 'Fall 2026',
       targetGpa: parseFloat(targetGpa) || 3.8,
+      language,
       gpaConfig,
     });
 
@@ -269,12 +274,186 @@ export const SettingsView: React.FC = () => {
     <div>
       <div className="view-header" style={{ marginBottom: '22px' }}>
         <div className="view-title-group">
-          <h2>Academic Preferences & Standards</h2>
-          <p>Personal student identity, degree grading systems, and local device backups</p>
+          <h2>{t('settings.title')}</h2>
+          <p>{t('settings.subtitle')}</p>
         </div>
       </div>
 
       <form onSubmit={handleSave}>
+        {/* Language Selection Card */}
+        <div className="settings-group">
+          <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '8px' }}>
+            <div
+              style={{
+                width: '40px',
+                height: '40px',
+                borderRadius: 'var(--radius-md)',
+                backgroundColor: 'rgba(99, 102, 241, 0.1)',
+                color: '#6366f1',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                flexShrink: 0,
+              }}
+            >
+              <Globe size={20} />
+            </div>
+            <div>
+              <h3 style={{ fontSize: '18px', fontWeight: 700, margin: 0, color: 'var(--text-main)' }}>
+                {t('settings.languageSection')}
+              </h3>
+              <p style={{ fontSize: '13.5px', color: 'var(--text-muted)', margin: 0 }}>
+                {t('settings.languageSubtitle')}
+              </p>
+            </div>
+          </div>
+
+          <div
+            style={{
+              display: 'grid',
+              gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))',
+              gap: '14px',
+              marginTop: '16px',
+            }}
+          >
+            {/* English Card */}
+            <button
+              type="button"
+              onClick={() => setLanguage('en')}
+              style={{
+                padding: '16px',
+                borderRadius: 'var(--radius-lg)',
+                border: `2px solid ${language === 'en' ? 'var(--primary)' : 'var(--border)'}`,
+                backgroundColor: language === 'en' ? 'rgba(37, 99, 235, 0.05)' : 'var(--bg-surface)',
+                display: 'flex',
+                alignItems: 'flex-start',
+                gap: '14px',
+                textAlign: 'left',
+                cursor: 'pointer',
+                transition: 'all 0.15s ease',
+              }}
+            >
+              <div
+                style={{
+                  width: '20px',
+                  height: '20px',
+                  borderRadius: '50%',
+                  border: `2px solid ${language === 'en' ? 'var(--primary)' : '#94a3b8'}`,
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  marginTop: '2px',
+                  flexShrink: 0,
+                }}
+              >
+                {language === 'en' && (
+                  <div
+                    style={{
+                      width: '10px',
+                      height: '10px',
+                      borderRadius: '50%',
+                      backgroundColor: 'var(--primary)',
+                    }}
+                  />
+                )}
+              </div>
+              <div style={{ flex: 1 }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                  <span style={{ fontSize: '15px', fontWeight: 700, color: 'var(--text-main)' }}>
+                    {t('settings.englishCardTitle')}
+                  </span>
+                  {language === 'en' && (
+                    <span
+                      style={{
+                        fontSize: '11px',
+                        fontWeight: 800,
+                        padding: '2px 8px',
+                        borderRadius: 'var(--radius-full)',
+                        backgroundColor: '#eff6ff',
+                        color: '#2563eb',
+                        border: '1px solid #bfdbfe',
+                      }}
+                    >
+                      Active
+                    </span>
+                  )}
+                </div>
+                <p style={{ fontSize: '13px', color: 'var(--text-muted)', margin: '4px 0 0', lineHeight: 1.4 }}>
+                  {t('settings.englishCardDesc')}
+                </p>
+              </div>
+            </button>
+
+            {/* Bangla Card */}
+            <button
+              type="button"
+              onClick={() => setLanguage('bn')}
+              style={{
+                padding: '16px',
+                borderRadius: 'var(--radius-lg)',
+                border: `2px solid ${language === 'bn' ? 'var(--primary)' : 'var(--border)'}`,
+                backgroundColor: language === 'bn' ? 'rgba(37, 99, 235, 0.05)' : 'var(--bg-surface)',
+                display: 'flex',
+                alignItems: 'flex-start',
+                gap: '14px',
+                textAlign: 'left',
+                cursor: 'pointer',
+                transition: 'all 0.15s ease',
+              }}
+            >
+              <div
+                style={{
+                  width: '20px',
+                  height: '20px',
+                  borderRadius: '50%',
+                  border: `2px solid ${language === 'bn' ? 'var(--primary)' : '#94a3b8'}`,
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  marginTop: '2px',
+                  flexShrink: 0,
+                }}
+              >
+                {language === 'bn' && (
+                  <div
+                    style={{
+                      width: '10px',
+                      height: '10px',
+                      borderRadius: '50%',
+                      backgroundColor: 'var(--primary)',
+                    }}
+                  />
+                )}
+              </div>
+              <div style={{ flex: 1 }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                  <span style={{ fontSize: '15px', fontWeight: 700, color: 'var(--text-main)' }}>
+                    {t('settings.bengaliCardTitle')}
+                  </span>
+                  {language === 'bn' && (
+                    <span
+                      style={{
+                        fontSize: '11px',
+                        fontWeight: 800,
+                        padding: '2px 8px',
+                        borderRadius: 'var(--radius-full)',
+                        backgroundColor: '#ecfdf5',
+                        color: '#059669',
+                        border: '1px solid #a7f3d0',
+                      }}
+                    >
+                      সক্রিয়
+                    </span>
+                  )}
+                </div>
+                <p style={{ fontSize: '13px', color: 'var(--text-muted)', margin: '4px 0 0', lineHeight: 1.4 }}>
+                  {t('settings.bengaliCardDesc')}
+                </p>
+              </div>
+            </button>
+          </div>
+        </div>
+
         {/* Student Profile Card */}
         <div className="settings-group">
           <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '8px' }}>
@@ -295,10 +474,10 @@ export const SettingsView: React.FC = () => {
             </div>
             <div>
               <h3 style={{ fontSize: '18px', fontWeight: 700, margin: 0, color: 'var(--text-main)' }}>
-                Student & University Profile
+                {t('settings.profileSection')}
               </h3>
               <p style={{ fontSize: '13.5px', color: 'var(--text-muted)', margin: 0 }}>
-                Personalize your academic workspace with your institution and program details.
+                {t('settings.profileSubtitle')}
               </p>
             </div>
           </div>
@@ -369,48 +548,48 @@ export const SettingsView: React.FC = () => {
             }}
           >
             <div className="form-group">
-              <label className="form-label" htmlFor="student-name">Student Full Name</label>
+              <label className="form-label" htmlFor="student-name">{t('settings.studentName')}</label>
               <input
                 id="student-name"
                 type="text"
                 className="form-input"
-                placeholder="e.g. Alex Morgan"
+                placeholder={t('settings.studentNamePlaceholder')}
                 value={studentName}
                 onChange={(e) => setStudentName(e.target.value)}
               />
             </div>
 
             <div className="form-group">
-              <label className="form-label" htmlFor="current-term-input">Current Active Term</label>
+              <label className="form-label" htmlFor="current-term-input">{t('settings.term')}</label>
               <input
                 id="current-term-input"
                 type="text"
                 className="form-input"
-                placeholder="e.g. Fall 2026"
+                placeholder={t('settings.termPlaceholder')}
                 value={currentTerm}
                 onChange={(e) => setCurrentTerm(e.target.value)}
               />
             </div>
 
             <div className="form-group">
-              <label className="form-label" htmlFor="uni-name">University / College</label>
+              <label className="form-label" htmlFor="uni-name">{t('settings.university')}</label>
               <input
                 id="uni-name"
                 type="text"
                 className="form-input"
-                placeholder="e.g. Stanford University / Oxford"
+                placeholder={t('settings.universityPlaceholder')}
                 value={universityName}
                 onChange={(e) => setUniversityName(e.target.value)}
               />
             </div>
 
             <div className="form-group">
-              <label className="form-label" htmlFor="degree-prog">Degree & Major</label>
+              <label className="form-label" htmlFor="degree-prog">{t('settings.degree')}</label>
               <input
                 id="degree-prog"
                 type="text"
                 className="form-input"
-                placeholder="e.g. B.S. in Computer Science"
+                placeholder={t('settings.degreePlaceholder')}
                 value={degreeProgram}
                 onChange={(e) => setDegreeProgram(e.target.value)}
               />
@@ -736,11 +915,11 @@ export const SettingsView: React.FC = () => {
         <div style={{ display: 'flex', alignItems: 'center', gap: '14px', marginBottom: '32px' }}>
           <button type="submit" className="btn-primary" style={{ minHeight: '44px', padding: '10px 24px', fontWeight: 700 }}>
             {isSaved ? <Check size={16} /> : null}
-            <span>{isSaved ? 'Settings Saved!' : 'Save Preferences & Rules'}</span>
+            <span>{isSaved ? (language === 'bn' ? 'সংরক্ষিত হয়েছে!' : 'Settings Saved!') : t('settings.saveSettings')}</span>
           </button>
           {isSaved && (
             <span style={{ fontSize: '13.5px', color: 'var(--success)', fontWeight: 700 }}>
-              Updated successfully
+              {language === 'bn' ? 'সফলভাবে আপডেট করা হয়েছে' : 'Updated successfully'}
             </span>
           )}
         </div>
