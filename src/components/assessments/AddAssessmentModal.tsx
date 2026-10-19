@@ -1,8 +1,10 @@
 import React, { useState } from 'react';
 import { Modal } from '../common/Modal';
 import { usePlanner } from '../../context/usePlanner';
-import type { Assessment, AssessmentType } from '../../types';
+import type { Assessment, AssessmentType, AssessmentPriority } from '../../types';
 import { VALID_ASSESSMENT_TYPES } from '../../utils/storage';
+import { getDefaultPriorityForType, PRIORITY_CONFIG } from '../../utils/priorityUtils';
+import { Flame, AlertTriangle, ShieldCheck } from 'lucide-react';
 
 interface AssessmentFormProps {
   assessmentToEdit: Assessment | null;
@@ -36,6 +38,13 @@ const AssessmentForm: React.FC<AssessmentFormProps> = ({
   const [categoryId, setCategoryId] = useState(assessmentToEdit?.categoryId || '');
   const [dueDate, setDueDate] = useState(assessmentToEdit?.dueDate || '');
   const [description, setDescription] = useState(assessmentToEdit?.description || '');
+  const [priority, setPriority] = useState<AssessmentPriority>(
+    assessmentToEdit?.priority ||
+      getDefaultPriorityForType(assessmentToEdit ? assessmentToEdit.type : 'Assignment')
+  );
+  const [hasManuallyChangedPriority, setHasManuallyChangedPriority] = useState<boolean>(
+    Boolean(assessmentToEdit?.priority)
+  );
 
   // Field-level error messages
   const [errors, setErrors] = useState<{
@@ -130,6 +139,7 @@ const AssessmentForm: React.FC<AssessmentFormProps> = ({
       title: title.trim(),
       type,
       customType: type === 'Other' ? customType.trim() : undefined,
+      priority,
       maxMarks: parsedMax,
       obtainedMarks: parsedObtained,
       dueDate: dueDate.trim() || undefined,
@@ -245,7 +255,11 @@ const AssessmentForm: React.FC<AssessmentFormProps> = ({
               className="form-select"
               value={type}
               onChange={(e) => {
-                setType(e.target.value as AssessmentType);
+                const newType = e.target.value as AssessmentType;
+                setType(newType);
+                if (!hasManuallyChangedPriority) {
+                  setPriority(getDefaultPriorityForType(newType));
+                }
                 if (errors.customType) setErrors((prev) => ({ ...prev, customType: undefined }));
               }}
             >
@@ -373,28 +387,90 @@ const AssessmentForm: React.FC<AssessmentFormProps> = ({
           </div>
         </div>
 
-        {/* Due Date */}
-        <div className="form-group">
-          <label className="form-label" htmlFor="asm-due-date-input">
-            Due Date (Optional)
-          </label>
-          <input
-            id="asm-due-date-input"
-            type="date"
-            className={`form-input ${errors.dueDate ? 'input-error' : ''}`}
-            value={dueDate}
-            onChange={(e) => {
-              setDueDate(e.target.value);
-              if (errors.dueDate) setErrors((prev) => ({ ...prev, dueDate: undefined }));
-            }}
-            aria-invalid={!!errors.dueDate}
-            aria-describedby={errors.dueDate ? 'asm-due-error' : undefined}
-          />
-          {errors.dueDate && (
-            <span id="asm-due-error" style={{ fontSize: '12px', color: 'var(--danger)', marginTop: '2px' }}>
-              {errors.dueDate}
+        {/* Due Date & Priority Selection */}
+        <div className="form-grid">
+          <div className="form-group">
+            <label className="form-label" htmlFor="asm-due-date-input">
+              Due Date (Optional)
+            </label>
+            <input
+              id="asm-due-date-input"
+              type="date"
+              className={`form-input ${errors.dueDate ? 'input-error' : ''}`}
+              value={dueDate}
+              onChange={(e) => {
+                setDueDate(e.target.value);
+                if (errors.dueDate) setErrors((prev) => ({ ...prev, dueDate: undefined }));
+              }}
+              aria-invalid={!!errors.dueDate}
+              aria-describedby={errors.dueDate ? 'asm-due-error' : undefined}
+            />
+            {errors.dueDate && (
+              <span id="asm-due-error" style={{ fontSize: '12px', color: 'var(--danger)', marginTop: '2px' }}>
+                {errors.dueDate}
+              </span>
+            )}
+            <span style={{ fontSize: '11.5px', color: 'var(--text-dim)', marginTop: '4px', display: 'block' }}>
+              Used to track timeline & upcoming deadlines
             </span>
-          )}
+          </div>
+
+          <div className="form-group">
+            <label className="form-label" id="asm-priority-label">
+              Priority Level
+            </label>
+            <div
+              role="radiogroup"
+              aria-labelledby="asm-priority-label"
+              style={{
+                display: 'grid',
+                gridTemplateColumns: 'repeat(3, 1fr)',
+                gap: '8px',
+              }}
+            >
+              {(['high', 'medium', 'low'] as AssessmentPriority[]).map((p) => {
+                const isSelected = priority === p;
+                const meta = PRIORITY_CONFIG[p];
+                return (
+                  <button
+                    key={p}
+                    type="button"
+                    role="radio"
+                    aria-checked={isSelected}
+                    onClick={() => {
+                      setPriority(p);
+                      setHasManuallyChangedPriority(true);
+                    }}
+                    style={{
+                      padding: '8px 4px',
+                      borderRadius: 'var(--radius-md)',
+                      border: `1.5px solid ${isSelected ? meta.accent : 'var(--border)'}`,
+                      backgroundColor: isSelected ? meta.bg : 'var(--bg-surface)',
+                      color: isSelected ? meta.color : 'var(--text-muted)',
+                      fontWeight: isSelected ? 800 : 600,
+                      fontSize: '13px',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      gap: '5px',
+                      cursor: 'pointer',
+                      transition: 'all 0.15s ease',
+                      boxShadow: isSelected ? '0 2px 6px -1px rgba(0,0,0,0.08)' : 'none',
+                    }}
+                    title={meta.description}
+                  >
+                    {p === 'high' && <Flame size={14} color={isSelected ? meta.accent : 'var(--text-muted)'} />}
+                    {p === 'medium' && <AlertTriangle size={14} color={isSelected ? meta.accent : 'var(--text-muted)'} />}
+                    {p === 'low' && <ShieldCheck size={14} color={isSelected ? meta.accent : 'var(--text-muted)'} />}
+                    <span>{meta.shortLabel}</span>
+                  </button>
+                );
+              })}
+            </div>
+            <span style={{ fontSize: '11.5px', color: 'var(--text-dim)', marginTop: '4px', display: 'block' }}>
+              {PRIORITY_CONFIG[priority].description}
+            </span>
+          </div>
         </div>
 
         {/* Description / Syllabus Notes */}

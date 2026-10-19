@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import {
   BookOpen,
   Award,
@@ -7,6 +7,10 @@ import {
   Sparkles,
   ArrowRight,
   TrendingUp,
+  Flame,
+  AlertTriangle,
+  ShieldCheck,
+  Clock,
 } from 'lucide-react';
 import { usePlanner } from '../../context/usePlanner';
 import { StatCard } from '../common/StatCard';
@@ -18,6 +22,12 @@ import {
   calculateCumulativeGpa,
 } from '../../utils/gpaCalculation';
 import { getCourseTheme } from '../../utils/courseThemes';
+import {
+  getDefaultPriorityForType,
+  getAssessmentPriorityMeta,
+  getAssessmentUrgency,
+  sortAssessments,
+} from '../../utils/priorityUtils';
 
 export const DashboardView: React.FC = () => {
   const {
@@ -30,10 +40,36 @@ export const DashboardView: React.FC = () => {
 
   const totalCredits = courses.reduce((sum, c) => sum + c.credits, 0);
 
-  // Strictly filter for valid future deadlines (excludes overdue and assessments without due dates)
-  const upcomingDeadlines = assessments
-    .filter((a) => isUpcomingAssessment(a))
-    .sort((a, b) => (a.dueDate || '').localeCompare(b.dueDate || ''));
+  // Filter & tab state for deadlines
+  const [deadlinesTab, setDeadlinesTab] = useState<'all' | 'high' | 'week'>('all');
+
+  // Strictly filter for valid future deadlines and sort with balanced Date & Priority algorithm
+  const allUpcomingDeadlines = sortAssessments(
+    assessments.filter((a) => isUpcomingAssessment(a)),
+    'dueDateAsc'
+  );
+
+  // Tab filtered list
+  const upcomingDeadlines = allUpcomingDeadlines.filter((a) => {
+    if (deadlinesTab === 'high') {
+      const p = a.priority || getDefaultPriorityForType(a.type);
+      return p === 'high';
+    }
+    if (deadlinesTab === 'week') {
+      const urgency = getAssessmentUrgency(a.dueDate);
+      return urgency.daysDiff !== null && urgency.daysDiff >= 0 && urgency.daysDiff <= 7;
+    }
+    return true;
+  });
+
+  const highPriorityCount = allUpcomingDeadlines.filter(
+    (a) => (a.priority || getDefaultPriorityForType(a.type)) === 'high'
+  ).length;
+
+  const thisWeekCount = allUpcomingDeadlines.filter((a) => {
+    const urgency = getAssessmentUrgency(a.dueDate);
+    return urgency.daysDiff !== null && urgency.daysDiff >= 0 && urgency.daysDiff <= 7;
+  }).length;
 
   // GPA calculations
   const gpaConfig = settings.gpaConfig || getDefaultGpaConfig(settings.gradingScale);
@@ -280,42 +316,141 @@ export const DashboardView: React.FC = () => {
               <CalendarCheck size={18} color="var(--warning)" />
               <span>Upcoming Deadlines</span>
             </h3>
+
             {assessments.length > 0 && (
-              <button
-                type="button"
-                className="btn-secondary"
-                style={{ padding: '7px 14px', fontSize: '13.5px' }}
-                onClick={() => setActiveSection('assessments')}
-              >
-                <span>All Assessments</span>
-                <ArrowRight size={14} />
-              </button>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap' }}>
+                {allUpcomingDeadlines.length > 0 && (
+                  <div
+                    style={{
+                      display: 'flex',
+                      alignItems: 'center',
+                      backgroundColor: 'var(--bg-subtle)',
+                      borderRadius: 'var(--radius-full)',
+                      padding: '3px',
+                      border: '1px solid var(--border)',
+                    }}
+                  >
+                    <button
+                      type="button"
+                      onClick={() => setDeadlinesTab('all')}
+                      style={{
+                        padding: '4px 10px',
+                        borderRadius: 'var(--radius-full)',
+                        fontSize: '12px',
+                        fontWeight: deadlinesTab === 'all' ? 800 : 600,
+                        backgroundColor: deadlinesTab === 'all' ? 'var(--bg-surface)' : 'transparent',
+                        color: deadlinesTab === 'all' ? 'var(--text-main)' : 'var(--text-muted)',
+                        boxShadow: deadlinesTab === 'all' ? 'var(--shadow-xs)' : 'none',
+                        border: 'none',
+                        cursor: 'pointer',
+                        transition: 'all 0.15s ease',
+                      }}
+                    >
+                      All ({allUpcomingDeadlines.length})
+                    </button>
+
+                    <button
+                      type="button"
+                      onClick={() => setDeadlinesTab('high')}
+                      style={{
+                        padding: '4px 10px',
+                        borderRadius: 'var(--radius-full)',
+                        fontSize: '12px',
+                        fontWeight: deadlinesTab === 'high' ? 800 : 600,
+                        backgroundColor: deadlinesTab === 'high' ? 'rgba(225, 29, 72, 0.12)' : 'transparent',
+                        color: deadlinesTab === 'high' ? '#e11d48' : 'var(--text-muted)',
+                        boxShadow: deadlinesTab === 'high' ? 'var(--shadow-xs)' : 'none',
+                        border: 'none',
+                        cursor: 'pointer',
+                        transition: 'all 0.15s ease',
+                      }}
+                    >
+                      🔥 High ({highPriorityCount})
+                    </button>
+
+                    <button
+                      type="button"
+                      onClick={() => setDeadlinesTab('week')}
+                      style={{
+                        padding: '4px 10px',
+                        borderRadius: 'var(--radius-full)',
+                        fontSize: '12px',
+                        fontWeight: deadlinesTab === 'week' ? 800 : 600,
+                        backgroundColor: deadlinesTab === 'week' ? 'rgba(37, 99, 235, 0.12)' : 'transparent',
+                        color: deadlinesTab === 'week' ? 'var(--accent)' : 'var(--text-muted)',
+                        boxShadow: deadlinesTab === 'week' ? 'var(--shadow-xs)' : 'none',
+                        border: 'none',
+                        cursor: 'pointer',
+                        transition: 'all 0.15s ease',
+                      }}
+                    >
+                      ⚡ This Week ({thisWeekCount})
+                    </button>
+                  </div>
+                )}
+
+                <button
+                  type="button"
+                  className="btn-secondary"
+                  style={{ padding: '6px 12px', fontSize: '12.5px' }}
+                  onClick={() => setActiveSection('assessments')}
+                >
+                  <span>All</span>
+                  <ArrowRight size={13} />
+                </button>
+              </div>
             )}
           </div>
 
           {upcomingDeadlines.length === 0 ? (
-            assessments.length === 0 ? (
-              <EmptyState
-                icon={<CalendarCheck size={28} />}
-                title="No deadlines scheduled"
-                description="Once you have courses added, you can log assignments, midterms, and project due dates here."
-                actionText="View Assessments"
-                onAction={() => setActiveSection('assessments')}
-              />
+            allUpcomingDeadlines.length === 0 ? (
+              assessments.length === 0 ? (
+                <EmptyState
+                  icon={<CalendarCheck size={28} />}
+                  title="No deadlines scheduled"
+                  description="Once you have courses added, you can log assignments, midterms, and project due dates here."
+                  actionText="View Assessments"
+                  onAction={() => setActiveSection('assessments')}
+                />
+              ) : (
+                <EmptyState
+                  icon={<CalendarCheck size={28} />}
+                  title="No upcoming deadlines"
+                  description={`You have ${assessments.length} assessment${assessments.length > 1 ? 's' : ''}, but none have valid upcoming due dates.`}
+                  actionText="View All Assessments"
+                  onAction={() => setActiveSection('assessments')}
+                />
+              )
             ) : (
-              <EmptyState
-                icon={<CalendarCheck size={28} />}
-                title="No upcoming deadlines"
-                description={`You have ${assessments.length} assessment${assessments.length > 1 ? 's' : ''}, but none have valid upcoming due dates.`}
-                actionText="View All Assessments"
-                onAction={() => setActiveSection('assessments')}
-              />
+              <div
+                style={{
+                  padding: '30px 20px',
+                  textAlign: 'center',
+                  backgroundColor: 'var(--bg-subtle)',
+                  borderRadius: 'var(--radius-md)',
+                  color: 'var(--text-muted)',
+                }}
+              >
+                <p style={{ fontSize: '14px', fontWeight: 600, color: 'var(--text-main)', marginBottom: '6px' }}>
+                  No deadlines match the "{deadlinesTab === 'high' ? 'High Priority' : 'This Week'}" filter.
+                </p>
+                <button
+                  type="button"
+                  className="btn-secondary"
+                  style={{ fontSize: '12.5px', padding: '5px 12px', marginTop: '6px' }}
+                  onClick={() => setDeadlinesTab('all')}
+                >
+                  Show All Upcoming Deadlines
+                </button>
+              </div>
             )
           ) : (
             <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
-              {upcomingDeadlines.slice(0, 4).map((a) => {
+              {upcomingDeadlines.slice(0, 5).map((a) => {
                 const targetCourse = courses.find((c) => c.id === a.courseId);
                 const theme = getCourseTheme(targetCourse || { code: a.courseCode });
+                const priorityMeta = getAssessmentPriorityMeta(a);
+                const urgency = getAssessmentUrgency(a.dueDate);
 
                 return (
                   <div
@@ -324,41 +459,103 @@ export const DashboardView: React.FC = () => {
                       display: 'flex',
                       alignItems: 'center',
                       justifyContent: 'space-between',
-                      padding: '16px 18px',
+                      padding: '14px 18px',
                       backgroundColor: 'var(--bg-subtle)',
                       borderRadius: 'var(--radius-md)',
                       borderLeft: `4px solid ${theme.primary}`,
                       transition: 'all 0.15s ease',
+                      gap: '12px',
                     }}
                   >
-                    <div>
-                      <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                    <div style={{ minWidth: 0, flex: 1 }}>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '6px', flexWrap: 'wrap' }}>
                         <span
                           style={{
-                            fontSize: '13px',
+                            fontSize: '12.5px',
                             fontWeight: 800,
                             backgroundColor: theme.badgeBg,
                             color: theme.text,
                             border: `1px solid ${theme.border}`,
-                            padding: '2px 8px',
+                            padding: '2px 7px',
                             borderRadius: 'var(--radius-sm)',
                           }}
                         >
                           {a.courseCode}
                         </span>
-                        <span style={{ fontSize: '13px', color: 'var(--text-dim)' }}>
+
+                        {/* Priority Badge */}
+                        <span
+                          style={{
+                            fontSize: '11px',
+                            fontWeight: 800,
+                            backgroundColor: priorityMeta.bg,
+                            color: priorityMeta.color,
+                            border: `1px solid ${priorityMeta.border}`,
+                            padding: '2px 6px',
+                            borderRadius: 'var(--radius-sm)',
+                            display: 'inline-flex',
+                            alignItems: 'center',
+                            gap: '3px',
+                          }}
+                          title={priorityMeta.description}
+                        >
+                          {priorityMeta.priority === 'high' && <Flame size={11} />}
+                          {priorityMeta.priority === 'medium' && <AlertTriangle size={11} />}
+                          {priorityMeta.priority === 'low' && <ShieldCheck size={11} />}
+                          {priorityMeta.shortLabel}
+                        </span>
+
+                        <span style={{ fontSize: '12.5px', color: 'var(--text-dim)' }}>
                           • {a.type === 'Other' && a.customType ? a.customType : a.type}
                         </span>
                       </div>
-                      <div style={{ fontSize: '16.5px', fontWeight: 700, color: 'var(--text-main)', marginTop: '3px' }}>
+
+                      <div
+                        style={{
+                          fontSize: '15.5px',
+                          fontWeight: 700,
+                          color: 'var(--text-main)',
+                          marginTop: '4px',
+                          overflow: 'hidden',
+                          textOverflow: 'ellipsis',
+                          whiteSpace: 'nowrap',
+                        }}
+                        title={a.title}
+                      >
                         {a.title}
                       </div>
                     </div>
-                    <div style={{ textAlign: 'right' }}>
-                      <div style={{ fontSize: '15px', fontWeight: 700, color: 'var(--text-main)' }}>
-                        {formatDueDate(a.dueDate)}
+
+                    <div style={{ textAlign: 'right', flexShrink: 0 }}>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '6px', justifyContent: 'flex-end' }}>
+                        <span style={{ fontSize: '14.5px', fontWeight: 700, color: 'var(--text-main)' }}>
+                          {formatDueDate(a.dueDate)}
+                        </span>
+                        {urgency.daysDiff !== null && (
+                          <span
+                            style={{
+                              fontSize: '11px',
+                              fontWeight: 800,
+                              color: urgency.color,
+                              backgroundColor: urgency.bg,
+                              border: `1px solid ${urgency.border}`,
+                              padding: '2px 6px',
+                              borderRadius: 'var(--radius-full)',
+                              display: 'inline-flex',
+                              alignItems: 'center',
+                              gap: '3px',
+                            }}
+                          >
+                            <Clock size={10} />
+                            {urgency.daysDiff === 0
+                              ? 'Today'
+                              : urgency.daysDiff === 1
+                              ? 'Tomorrow'
+                              : `${urgency.daysDiff}d`}
+                          </span>
+                        )}
                       </div>
-                      <div style={{ fontSize: '13.5px', color: 'var(--text-muted)', marginTop: '2px' }}>
+                      <div style={{ fontSize: '12.5px', color: 'var(--text-muted)', marginTop: '2px' }}>
                         Max: {a.maxMarks} pts
                       </div>
                     </div>

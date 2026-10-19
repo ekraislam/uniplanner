@@ -2,6 +2,7 @@ import type {
   Course,
   Assessment,
   AssessmentType,
+  AssessmentPriority,
   StudentSettings,
   CourseGradingConfig,
   MarksCategory,
@@ -214,6 +215,12 @@ export function loadAssessments(): Assessment[] {
         }
       }
 
+      // Priority normalization
+      let priority: AssessmentPriority | undefined = undefined;
+      if (item.priority === 'high' || item.priority === 'medium' || item.priority === 'low') {
+        priority = item.priority;
+      }
+
       validAssessments.push({
         id: item.id as string,
         courseId: item.courseId as string,
@@ -222,6 +229,7 @@ export function loadAssessments(): Assessment[] {
         title: (item.title as string).trim(),
         type,
         customType: typeof item.customType === 'string' && item.customType.trim() ? item.customType.trim() : undefined,
+        priority,
         maxMarks,
         obtainedMarks,
         dueDate: typeof item.dueDate === 'string' && item.dueDate.trim() ? item.dueDate.trim() : undefined,

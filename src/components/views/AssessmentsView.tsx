@@ -9,15 +9,25 @@ import {
   Filter,
   CheckCircle2,
   Clock,
+  Flame,
+  AlertTriangle,
+  ShieldCheck,
+  ArrowUpDown,
 } from 'lucide-react';
 import { usePlanner } from '../../context/usePlanner';
 import { EmptyState } from '../common/EmptyState';
 import {
   VALID_ASSESSMENT_TYPES,
   formatDueDate,
-  isUpcomingAssessment,
 } from '../../utils/storage';
 import { getCourseTheme } from '../../utils/courseThemes';
+import {
+  getDefaultPriorityForType,
+  getAssessmentPriorityMeta,
+  getAssessmentUrgency,
+  sortAssessments,
+  type AssessmentSortOption,
+} from '../../utils/priorityUtils';
 
 export const AssessmentsView: React.FC = () => {
   const {
@@ -28,9 +38,11 @@ export const AssessmentsView: React.FC = () => {
     openDeleteAssessmentModal,
   } = usePlanner();
 
-  // Filter states
+  // Filter and Sort states
   const [selectedCourseFilter, setSelectedCourseFilter] = useState<string>('all');
   const [selectedTypeFilter, setSelectedTypeFilter] = useState<string>('all');
+  const [selectedPriorityFilter, setSelectedPriorityFilter] = useState<string>('all');
+  const [sortBy, setSortBy] = useState<AssessmentSortOption>('dueDateAsc');
 
   // Filter logic
   const filteredAssessments = assessments.filter((a) => {
@@ -38,8 +50,20 @@ export const AssessmentsView: React.FC = () => {
       selectedCourseFilter === 'all' || a.courseId === selectedCourseFilter;
     const matchesType =
       selectedTypeFilter === 'all' || a.type === selectedTypeFilter;
-    return matchesCourse && matchesType;
+    const currentPriority = a.priority || getDefaultPriorityForType(a.type);
+    const matchesPriority =
+      selectedPriorityFilter === 'all' || currentPriority === selectedPriorityFilter;
+    return matchesCourse && matchesType && matchesPriority;
   });
+
+  // Balanced Sort logic
+  const sortedAssessments = sortAssessments(filteredAssessments, sortBy);
+
+  const hasActiveFilterOrCustomSort =
+    selectedCourseFilter !== 'all' ||
+    selectedTypeFilter !== 'all' ||
+    selectedPriorityFilter !== 'all' ||
+    sortBy !== 'dueDateAsc';
 
   return (
     <div>
@@ -155,17 +179,59 @@ export const AssessmentsView: React.FC = () => {
               </select>
             </div>
 
-            {(selectedCourseFilter !== 'all' || selectedTypeFilter !== 'all') && (
+            {/* Filter by Priority */}
+            <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+              <label htmlFor="filter-priority-select" style={{ fontSize: '14px', fontWeight: 600, color: 'var(--text-muted)' }}>
+                Priority:
+              </label>
+              <select
+                id="filter-priority-select"
+                className="form-select"
+                style={{ padding: '8px 14px', fontSize: '14px', minWidth: '150px' }}
+                value={selectedPriorityFilter}
+                onChange={(e) => setSelectedPriorityFilter(e.target.value)}
+              >
+                <option value="all">All Priorities</option>
+                <option value="high">🔴 High Priority</option>
+                <option value="medium">🟡 Medium Priority</option>
+                <option value="low">🟢 Low Priority</option>
+              </select>
+            </div>
+
+            {/* Balanced Sort By Control */}
+            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginLeft: 'auto' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '6px', color: 'var(--text-muted)', fontSize: '14px', fontWeight: 600 }}>
+                <ArrowUpDown size={15} />
+                <label htmlFor="sort-assessments-select">Sort:</label>
+              </div>
+              <select
+                id="sort-assessments-select"
+                className="form-select"
+                style={{ padding: '8px 14px', fontSize: '14px', minWidth: '185px' }}
+                value={sortBy}
+                onChange={(e) => setSortBy(e.target.value as AssessmentSortOption)}
+              >
+                <option value="dueDateAsc">📅 Due Date (Earliest First)</option>
+                <option value="priorityDesc">🔥 Priority (High to Low)</option>
+                <option value="dueDateDesc">⌛ Due Date (Latest First)</option>
+                <option value="marksDesc">💯 Max Marks (Highest First)</option>
+                <option value="titleAsc">🔤 Title (A to Z)</option>
+              </select>
+            </div>
+
+            {hasActiveFilterOrCustomSort && (
               <button
                 type="button"
                 className="btn-secondary"
-                style={{ padding: '8px 14px', fontSize: '13.5px', marginLeft: 'auto' }}
+                style={{ padding: '8px 14px', fontSize: '13.5px' }}
                 onClick={() => {
                   setSelectedCourseFilter('all');
                   setSelectedTypeFilter('all');
+                  setSelectedPriorityFilter('all');
+                  setSortBy('dueDateAsc');
                 }}
               >
-                Reset Filters
+                Reset All
               </button>
             )}
           </div>
@@ -203,7 +269,7 @@ export const AssessmentsView: React.FC = () => {
           ) : (
             /* Assessments Grid */
             <div className="courses-grid">
-              {filteredAssessments.map((a) => {
+              {sortedAssessments.map((a) => {
                 const targetCourse = courses.find((c) => c.id === a.courseId);
                 const theme = getCourseTheme(targetCourse || { code: a.courseCode });
                 const hasObtainedMarks = a.obtainedMarks !== undefined && a.obtainedMarks !== null;
@@ -216,7 +282,8 @@ export const AssessmentsView: React.FC = () => {
                     ? `${a.customType} (Other)`
                     : a.type;
 
-                const isUpcoming = isUpcomingAssessment(a);
+                const priorityMeta = getAssessmentPriorityMeta(a);
+                const urgency = getAssessmentUrgency(a.dueDate);
 
                 return (
                   <div
@@ -243,18 +310,43 @@ export const AssessmentsView: React.FC = () => {
                         >
                           {a.courseCode}
                         </span>
-                        <span
-                          style={{
-                            fontSize: '13.5px',
-                            fontWeight: 600,
-                            padding: '5px 11px',
-                            borderRadius: 'var(--radius-full)',
-                            backgroundColor: 'var(--bg-subtle)',
-                            color: 'var(--text-muted)',
-                          }}
-                        >
-                          {displayType}
-                        </span>
+
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '6px', flexWrap: 'wrap' }}>
+                          {/* Priority Pill */}
+                          <span
+                            style={{
+                              fontSize: '12px',
+                              fontWeight: 800,
+                              padding: '3px 9px',
+                              borderRadius: 'var(--radius-full)',
+                              backgroundColor: priorityMeta.bg,
+                              color: priorityMeta.color,
+                              border: `1px solid ${priorityMeta.border}`,
+                              display: 'inline-flex',
+                              alignItems: 'center',
+                              gap: '4px',
+                            }}
+                            title={priorityMeta.description}
+                          >
+                            {priorityMeta.priority === 'high' && <Flame size={12} />}
+                            {priorityMeta.priority === 'medium' && <AlertTriangle size={12} />}
+                            {priorityMeta.priority === 'low' && <ShieldCheck size={12} />}
+                            <span>{priorityMeta.label}</span>
+                          </span>
+
+                          <span
+                            style={{
+                              fontSize: '13px',
+                              fontWeight: 600,
+                              padding: '3px 10px',
+                              borderRadius: 'var(--radius-full)',
+                              backgroundColor: 'var(--bg-subtle)',
+                              color: 'var(--text-muted)',
+                            }}
+                          >
+                            {displayType}
+                          </span>
+                        </div>
                       </div>
 
                       {/* Title */}
@@ -330,39 +422,40 @@ export const AssessmentsView: React.FC = () => {
                         </div>
                       </div>
 
-                      {/* Due Date & Timeline */}
+                      {/* Due Date & Urgency Timeline */}
                       <div
                         style={{
                           display: 'flex',
                           alignItems: 'center',
                           gap: '8px',
-                          fontSize: '14.5px',
+                          fontSize: '14px',
                           color: 'var(--text-muted)',
                           marginBottom: a.description ? '10px' : '16px',
+                          flexWrap: 'wrap',
                         }}
                       >
-                        <Calendar size={16} color="var(--accent)" />
+                        <Calendar size={15} color="var(--accent)" />
                         <span>
                           Due: <strong>{formatDueDate(a.dueDate)}</strong>
                         </span>
-                        {a.dueDate && isUpcoming && (
+                        {a.dueDate && (
                           <span
                             style={{
                               marginLeft: 'auto',
-                              fontSize: '13px',
-                              fontWeight: 700,
-                              color: 'var(--accent)',
-                              backgroundColor: 'var(--primary-light)',
-                              border: '1px solid var(--accent-soft)',
-                              padding: '3px 9px',
+                              fontSize: '12px',
+                              fontWeight: 800,
+                              color: urgency.color,
+                              backgroundColor: urgency.bg,
+                              border: `1px solid ${urgency.border}`,
+                              padding: '2px 8px',
                               borderRadius: 'var(--radius-full)',
                               display: 'inline-flex',
                               alignItems: 'center',
                               gap: '4px',
                             }}
                           >
-                            <Clock size={13} />
-                            Upcoming
+                            <Clock size={12} />
+                            {urgency.label}
                           </span>
                         )}
                       </div>

@@ -51,6 +51,8 @@ export type AssessmentType =
   | 'Final Exam'
   | 'Other';
 
+export type AssessmentPriority = 'high' | 'medium' | 'low';
+
 export interface Assessment {
   id: string;
   courseId: string;
@@ -59,6 +61,7 @@ export interface Assessment {
   title: string;
   type: AssessmentType;
   customType?: string; // Used when type === 'Other'
+  priority?: AssessmentPriority; // 'high' | 'medium' | 'low'
   maxMarks: number;
   obtainedMarks?: number | null; // Optional; empty/null means results not released yet
   dueDate?: string; // Optional: YYYY-MM-DD

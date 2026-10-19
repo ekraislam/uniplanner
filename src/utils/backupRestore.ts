@@ -1,6 +1,7 @@
 import type {
   Course,
   Assessment,
+  AssessmentPriority,
   StudentSettings,
   UniPlannerBackupData,
   BackupValidationResult,
@@ -54,6 +55,7 @@ export function createBackupData(
       title: a.title.trim(),
       type: a.type,
       customType: a.customType ? a.customType.trim() : undefined,
+      priority: a.priority,
       maxMarks: a.maxMarks,
       obtainedMarks: a.obtainedMarks !== undefined ? a.obtainedMarks : null,
       dueDate: a.dueDate ? a.dueDate.trim() : undefined,
@@ -390,6 +392,11 @@ export function validateBackupJson(rawJson: string): BackupValidationResult {
       const parentCourse = validCourses.find((c) => c.id === courseId);
       const courseCode = parentCourse ? parentCourse.code : (typeof item.courseCode === 'string' ? item.courseCode : 'COURSE');
 
+      let priority: AssessmentPriority | undefined = undefined;
+      if (item.priority === 'high' || item.priority === 'medium' || item.priority === 'low') {
+        priority = item.priority;
+      }
+
       validAssessments.push({
         id: asmId,
         courseId,
@@ -398,6 +405,7 @@ export function validateBackupJson(rawJson: string): BackupValidationResult {
         title,
         type,
         customType: typeof item.customType === 'string' && item.customType.trim() ? item.customType.trim() : undefined,
+        priority,
         maxMarks: Math.max(1, maxMarks),
         obtainedMarks,
         dueDate: typeof item.dueDate === 'string' && item.dueDate.trim() ? item.dueDate.trim() : undefined,
